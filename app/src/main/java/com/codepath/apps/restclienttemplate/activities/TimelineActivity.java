@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
@@ -25,6 +26,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -82,6 +84,16 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
             }
         };
         rvTweets.addOnScrollListener(scrollListener);
+        adapter.setOnItemClickListener(new TweetAdapter.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(View itemView, int position) {
+                Intent intent = new Intent(getApplicationContext(), TweetDetailActivity.class);
+                Tweet tweet = tweetsList.get(position);
+                intent.putExtra("tweet", Parcels.wrap(tweet));
+                startActivity(intent);
+            }
+        });
     }
 
     private void loadNextDataFromApi(long page) {
@@ -103,7 +115,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
                         for (int i = 0; i < response.length(); i++) {
                             try {
                                 Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
-                                Log.d("DEBUG", " since id = " + tweet.getUid());
+                                Log.d("DEBUG", " since id = " + tweet.getTweetId());
                                 tweetsList.add(tweet);
                                 // Notify the adapter of the item last inserted
                                 adapter.notifyItemInserted(tweetsList.size() - 1);
@@ -113,7 +125,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
                         }
 
                         // sinceid would be the id of the last item in the array list.
-                        sinceId = tweetsList.get(tweetsList.size() - 1).getUid();
+                        sinceId = tweetsList.get(tweetsList.size() - 1).getTweetId();
                         Log.d("DEBUG", "......... MIN since id = " + sinceId);
                     }
 
@@ -129,8 +141,17 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
                 });
             }
         };
-        // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
         handler.postDelayed(runnable, 500);
+        // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
+//        if (NetworkUtil.isNetworkAvailable(getApplicationContext()) && NetworkUtil.isOnline()) {
+//            handler.postDelayed(runnable, 500);
+//        } else {
+//            // No Network connection
+//            // Read from DB
+          //tweetsList = (ArrayList<Tweet>) SQLite.select().from(Tweet.class).where((Tweet_Table.user_userId).is(User_Table.userId)).queryList();
+          //adapter.notifyDataSetChanged();
+//        }
+
     }
 
     // Click handler for FAB
@@ -141,7 +162,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         composeTweetDialogFragment.show(fm, "fragment_compose_tweet");
     }
 
-    // Compose Tweet API Call
+    // Compose TweetInDB API Call
     private void postNewTweet(final String tweetText) {
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -194,7 +215,25 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.d("DEBUG", errorResponse.toString());
+                        try {
+                            Log.d("DEBUG", errorResponse.getString("error"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        try {
+                            Log.d("DEBUG", errorResponse.getJSONObject(0).toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        Log.d("DEBUG", responseString);
                     }
                 });
             }

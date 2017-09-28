@@ -101,7 +101,7 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 tvCharCount.setText(s.length() + getActivity().getResources().getString(R.string.charCountString));
                 if(s.length() > 140) {
-                    // Disable Tweet button
+                    // Disable TweetInDB button
                     btnTweet.setEnabled(false);
                 } else {
                     btnTweet.setEnabled(true);

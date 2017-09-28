@@ -24,12 +24,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
     ArrayList<Tweet> mTweetsList;
     Context context;
+    OnItemClickListener onItemClickListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
 
     public TweetAdapter(ArrayList<Tweet> tweetsList) {
         mTweetsList = tweetsList;
     }
 
-    // Create a new Tweet row and cache references into View Holder
+    // Create a new TweetInDB row and cache references into View Holder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
@@ -67,21 +72,47 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView ivProfileImage;
         public TextView tvUserName;
         public TextView tvBody;
         public TextView tvTime;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);
-        }
-    }
+            itemView.setOnClickListener(new View.OnClickListener() {
 
+                @Override
+                public void onClick(View v) {
+                    if(onItemClickListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            onItemClickListener.onItemClick(itemView, position);
+                        }
+                    }
+                }
+            });
+        }
+
+//        @Override
+//        public void onClick(View v) {
+//            int position = getAdapterPosition(); // gets item position
+//            if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
+//                Tweet tweet = mTweetsList.get(position);
+//                // We can access the data within the views
+//               Toast.makeText(v.getContext(), tweet.getBody(), Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent();
+//
+//            }
+//        }
+    }
 }

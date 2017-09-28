@@ -2,6 +2,13 @@ package com.codepath.apps.restclienttemplate.models;
 
 import android.view.View;
 
+import com.codepath.apps.restclienttemplate.helpers.database.SimpleTweetsDatabase;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
@@ -10,39 +17,58 @@ import org.parceler.Parcel;
  * Created by vidhya on 9/25/17.
  */
 
-@Parcel
-public class Tweet {
 
+@Table(database = SimpleTweetsDatabase.class)
+@Parcel //(analyze = {Tweet.class})
+public class Tweet extends BaseModel{
+
+    @PrimaryKey @Column
+    long tweetId;
+
+    @Column
     String body;
-    long uid;
-    String createdAt;
-    User user;
 
+    @Column
+    String createdAt;
+
+    @Column @ForeignKey(saveForeignKeyModel = true)
+    User user;
 
     // empty constructor needed by the Parceler library
     public Tweet() {
     }
 
+    public Tweet(JSONObject jsonObject) {
+        super();
+        try {
+            this.body = jsonObject.getString("text");
+            this.createdAt = jsonObject.getString("created_at");
+            this.tweetId = jsonObject.getLong("id");
+            this.user = new User(jsonObject.getJSONObject("user"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Tweet(View itemView, String body, long uid, String createdAt, User user) {
         this.body = body;
-        this.uid = uid;
+        this.tweetId = uid;
         this.createdAt = createdAt;
         this.user = user;
     }
 
     public Tweet(View itemView, String body, long uid, String createdAt) {
         this.body = body;
-        this.uid = uid;
+        this.tweetId = uid;
         this.createdAt = createdAt;
 
     }
 
     public static Tweet fromJSON (JSONObject jsonObject) throws JSONException {
-        Tweet tweet = new Tweet();
-        tweet.body = jsonObject.getString("text");
-        tweet.createdAt = jsonObject.getString("created_at");
-        tweet.uid = jsonObject.getLong("id");
-        tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+        Tweet tweet = new Tweet(jsonObject);
+        tweet.getUser().save();
+        tweet.save();
+       // tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         return tweet;
     }
 
@@ -54,12 +80,12 @@ public class Tweet {
         this.body = body;
     }
 
-    public long getUid() {
-        return uid;
+    public long getTweetId() {
+        return tweetId;
     }
 
-    public void setUid(long uid) {
-        this.uid = uid;
+    public void setTweetId(long tweetId) {
+        this.tweetId = tweetId;
     }
 
     public String getCreatedAt() {
