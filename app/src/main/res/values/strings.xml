@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Simple Tweet</string>
+    <string name="login_label">Log in</string>
+    <string name="intent_scheme">oauth</string>
+    <string name="intent_host">cprest</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="tweet_dialog_title">Let\'s tweet</string>
+    <string name="composeTweetHint">What\'s up?</string>
+
+</resources>
