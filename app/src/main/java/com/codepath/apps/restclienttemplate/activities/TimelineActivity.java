@@ -130,7 +130,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
             }
         };
         // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
-        //handler.postDelayed(runnable, 500);
+        handler.postDelayed(runnable, 500);
     }
 
     // Click handler for FAB
