@@ -3,6 +3,8 @@ package com.codepath.apps.restclienttemplate.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.codepath.apps.restclienttemplate.R;
 
@@ -23,6 +26,7 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
     private EditText etComposeTweet;
     private Button btnTweet;
     private ImageButton btnCloseDialog;
+    private TextView tvCharCount;
 
     public ComposeTweetDialogFragment() {
         // Required empty public constructor
@@ -83,6 +87,30 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
             @Override
             public void onClick(View v) {
                dismiss();
+            }
+        });
+
+        tvCharCount = (TextView) view.findViewById(R.id.tvCharCount);
+
+        etComposeTweet.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tvCharCount.setText(s.length() + getActivity().getResources().getString(R.string.charCountString));
+                if(s.length() > 140) {
+                    // Disable Tweet button
+                    btnTweet.setEnabled(false);
+                } else {
+                    btnTweet.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
