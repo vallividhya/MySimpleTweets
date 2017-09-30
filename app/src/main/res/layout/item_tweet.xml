@@ -30,6 +30,8 @@
         android:layout_below="@+id/tvUserName"
         android:layout_marginLeft="5dp"
         android:layout_marginBottom="3dp"
+        android:autoLink="all"
+        android:linksClickable="true"
         android:layout_toRightOf="@+id/ivProfileImage"
         android:layout_toEndOf="@+id/ivProfileImage"
         android:text="TextView" />

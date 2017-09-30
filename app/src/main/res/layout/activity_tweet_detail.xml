@@ -38,6 +38,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/llayout"
         android:layout_margin="5dp"
+        android:autoLink="all"
+        android:linksClickable="true"
         android:text="TextView" />
 
     <TextView
