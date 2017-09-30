@@ -12,34 +12,4 @@ public class SimpleTweetsDatabase {
 
     public static final String NAME = "SimpleTweetsDatabase";
 
-//    @Table(database = SimpleTweetsDatabase.class)
-//    @Parcel(analyze = {TweetInDB.class})
-//    public class TweetInDB extends BaseModel {
-//
-//        @Column
-//        @PrimaryKey (autoincrement = true)
-//        long tweetId;
-//
-//        @Column
-//        long userId;
-//
-//        @Column
-//        String tweetText;
-//
-//        @Column
-//        String userScreenName;
-//
-//        @Column
-//        String tweetCreateTime;
-//    }
-//
-//    // Save new tweet
-//    public void addTweet(Tweet tweet, User user) {
-//        TweetInDB tweetInDB = new TweetInDB();
-//        tweetInDB.tweetCreateTime = tweet.getCreatedAt();
-//        tweetInDB.tweetText = tweet.getBody();
-//        tweetInDB.userId = user.getUserId();
-//        tweetInDB.userScreenName = user.getScreenName();
-//    }
-
 }

@@ -68,7 +68,6 @@ public class Tweet extends BaseModel{
         Tweet tweet = new Tweet(jsonObject);
         tweet.getUser().save();
         tweet.save();
-       // tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         return tweet;
     }
 

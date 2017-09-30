@@ -33,6 +33,10 @@
                     android:host="@string/intent_host"
                     android:scheme="@string/intent_scheme" />
             </intent-filter>
+
+                <intent-filter>
+                    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                </intent-filter>
         </activity>
         <activity android:name=".activities.TimelineActivity" />
         <activity android:name=".activities.TweetDetailActivity"></activity>

@@ -1,6 +1,10 @@
 package com.codepath.apps.restclienttemplate.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.adapters.TweetAdapter;
@@ -20,8 +25,10 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
+import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 import com.codepath.apps.restclienttemplate.util.TimeUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,14 +49,19 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     SwipeRefreshLayout swipeContainer;
     static long sinceId = 1;
     final AccountOwner[] accountOwner = new AccountOwner[1];
+    NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
         setupViews();
-        populateTimeLine(1);
+        populateTimeLineFromAPICall(1);
         getAccountOwnerInfo();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        networkChangeReceiver = new NetworkChangeReceiver();
+        registerReceiver(networkChangeReceiver, intentFilter);
     }
 
     private void setupViews() {
@@ -59,7 +71,11 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
             public void onRefresh() {
                 // Clear items in the adapter so that the API will load new items.
                 adapter.clear();
-                populateTimeLine(1);
+                if (NetworkUtil.isNetworkAvailable(getApplicationContext())) {
+                    populateTimeLineFromAPICall(1);
+                } else {
+                    populateTimeLineFromLocalDB();
+                }
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -97,10 +113,10 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     }
 
     private void loadNextDataFromApi(long page) {
-        populateTimeLine(sinceId);
+        populateTimeLineFromAPICall(sinceId);
     }
 
-    private void populateTimeLine(final long since_id) {
+    private void populateTimeLineFromAPICall(final long since_id) {
         final Handler handler = new Handler();
 
         Runnable runnable = new Runnable() {
@@ -136,22 +152,23 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.d("ERROR", errorResponse.toString());
+                        // Error could be 423. In such a case, display from local DB.
+                        populateTimeLineFromLocalDB();
+                        //Log.d("ERROR", errorResponse.toString());
                     }
                 });
             }
         };
-        handler.postDelayed(runnable, 500);
         // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
-//        if (NetworkUtil.isNetworkAvailable(getApplicationContext()) && NetworkUtil.isOnline()) {
-//            handler.postDelayed(runnable, 500);
-//        } else {
-//            // No Network connection
-//            // Read from DB
-          //tweetsList = (ArrayList<Tweet>) SQLite.select().from(Tweet.class).where((Tweet_Table.user_userId).is(User_Table.userId)).queryList();
-          //adapter.notifyDataSetChanged();
-//        }
+        handler.postDelayed(runnable, 500);
+    }
 
+    public void populateTimeLineFromLocalDB() {
+        // No Network connection
+        // Read from DB
+        tweetsList.addAll((ArrayList<Tweet>) SQLite.select().from(Tweet.class).queryList());
+        Log.d("TEST..... ", " "  + tweetsList.get(0).getUser().getScreenName());
+        adapter.notifyDataSetChanged();
     }
 
     // Click handler for FAB
@@ -179,12 +196,30 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                         Log.d("DEBUG", "post failed " + errorResponse.toString());
+                        Toast.makeText(getApplicationContext(), "Failed to post", Toast.LENGTH_LONG).show();
                     }
                 });
             }
         };
         // This API does not have a rate-limit. So, can just be posted.
         handler.post(runnable);
+    }
+
+    public class NetworkChangeReceiver extends BroadcastReceiver {
+
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (NetworkUtil.isNetworkAvailable(context)) {
+                // Network available now:
+                Log.d("DEBUG", "vvv: populating from internet");
+                populateTimeLineFromAPICall(sinceId);
+            } else {
+                // Network disconnected
+                Log.d("DEBUG", "vvv: populating from local DB");
+                populateTimeLineFromLocalDB();
+            }
+        }
     }
 
     @Override
@@ -215,17 +250,14 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        try {
-                            Log.d("DEBUG", errorResponse.getString("error"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                           // Log.d("DEBUG", errorResponse.getString("error"));
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                         try {
-                            Log.d("DEBUG", errorResponse.getJSONObject(0).toString());
+                            Log.d("DEBUG",  "v1:"+ errorResponse.getJSONObject(0).toString());
+                            Toast.makeText(getApplicationContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -233,7 +265,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Log.d("DEBUG", responseString);
+                        Log.d("DEBUG", "v2:" + responseString);
+                        Toast.makeText(getApplicationContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -257,5 +290,11 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         adapter.notifyItemInserted(0);
         //To show the latest tweet added by account owner on the top
         rvTweets.smoothScrollToPosition(0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(networkChangeReceiver);
+        super.onDestroy();
     }
 }
