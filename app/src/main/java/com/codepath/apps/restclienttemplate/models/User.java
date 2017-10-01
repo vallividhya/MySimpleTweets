@@ -80,7 +80,7 @@ public class User extends BaseModel {
     public User() {}
 
     public static User fromJson(JSONObject jsonObject) throws JSONException{
-        User user = new User();
+        User user = new User(jsonObject);
         user.save();
         return user;
     }

@@ -18,6 +18,7 @@ public class TweetDetailActivity extends AppCompatActivity {
     TextView tvUserName;
     TextView tvBody;
     TextView tvTime;
+    public ImageView ivTweetMediaImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +36,9 @@ public class TweetDetailActivity extends AppCompatActivity {
         tvTime.setText(TimeUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
         Glide.with(getApplicationContext()).load(tweet.getUser().getProfileImageUrl()).into(ivProfileImage);
 
+        ivTweetMediaImage = (ImageView) findViewById(R.id.ivMediaImage);
+        if (tweet.getMedia() != null) {
+            Glide.with(getApplicationContext()).load(tweet.getMedia().getMediaUrl()).into(ivTweetMediaImage);
+        }
     }
 }

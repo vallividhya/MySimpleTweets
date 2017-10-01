@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate.models;
 
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.codepath.apps.restclienttemplate.helpers.database.SimpleTweetsDatabase;
@@ -9,6 +10,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
@@ -34,6 +36,9 @@ public class Tweet extends BaseModel{
     @Column @ForeignKey(saveForeignKeyModel = true)
     User user;
 
+    @Column @Nullable @ForeignKey(saveForeignKeyModel = true)
+    Media media;
+
     // empty constructor needed by the Parceler library
     public Tweet() {
     }
@@ -45,6 +50,19 @@ public class Tweet extends BaseModel{
             this.createdAt = jsonObject.getString("created_at");
             this.tweetId = jsonObject.getLong("id");
             this.user = new User(jsonObject.getJSONObject("user"));
+            JSONObject entityJson = jsonObject.optJSONObject("entities");
+            JSONObject mediaJson = null;
+            if (entityJson != null) {
+                JSONArray mediaJArray = entityJson.optJSONArray("media");
+                // This JSON array has only one element, says Twitter API Docs
+                if (mediaJArray != null) {
+                    mediaJson = mediaJArray.getJSONObject(0);
+                    if (mediaJson != null) {
+                        this.media = new Media(mediaJson);
+                    }
+                }
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -67,6 +85,9 @@ public class Tweet extends BaseModel{
     public static Tweet fromJSON (JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet(jsonObject);
         tweet.getUser().save();
+        if (tweet.getMedia() != null) {
+            tweet.getMedia().save();
+        }
         tweet.save();
         return tweet;
     }
@@ -102,4 +123,14 @@ public class Tweet extends BaseModel{
     public void setUser(User user) {
         this.user = user;
     }
+
+    @Nullable
+    public Media getMedia() {
+        return media;
+    }
+
+    public void setMedia(@Nullable Media media) {
+        this.media = media;
+    }
+
 }
