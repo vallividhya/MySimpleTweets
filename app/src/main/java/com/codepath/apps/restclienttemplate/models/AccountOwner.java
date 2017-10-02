@@ -1,9 +1,5 @@
 package com.codepath.apps.restclienttemplate.models;
 
-import com.codepath.apps.restclienttemplate.helpers.database.SimpleTweetsDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.json.JSONException;
@@ -13,12 +9,9 @@ import org.parceler.Parcel;
 /**
  * Created by vidhya on 9/27/17.
  */
-@Table(database = SimpleTweetsDatabase.class)
 @Parcel
 public class AccountOwner extends BaseModel {
 
-    @PrimaryKey
-    @Column
     String draftTweet;
 
     String screenName;
@@ -58,11 +51,4 @@ public class AccountOwner extends BaseModel {
         accountOwner.setProfileImageUrl(jsonObject.getString("profile_image_url"));
         return accountOwner;
     }
-
-    public void saveDraft(String draft) {
-        AccountOwner accountOwner = new AccountOwner();
-        this.draftTweet = draft;
-        accountOwner.save();
-    }
-
 }

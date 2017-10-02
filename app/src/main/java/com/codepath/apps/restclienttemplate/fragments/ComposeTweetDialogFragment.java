@@ -1,5 +1,7 @@
 package com.codepath.apps.restclienttemplate.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -18,15 +20,12 @@ import com.codepath.apps.restclienttemplate.R;
 
 
 public class ComposeTweetDialogFragment extends DialogFragment   {
-//    // TODO: Rename parameter arguments, choose names that match
-//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
 
     private EditText etComposeTweet;
     private Button btnTweet;
     private ImageButton btnCloseDialog;
     private TextView tvCharCount;
+    SharedPreferences preferences;
 
     public ComposeTweetDialogFragment() {
         // Required empty public constructor
@@ -36,13 +35,6 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
         void onFinishComposeTweet(String tweetText);
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param title Parameter 1.
-     * @return A new instance of fragment ComposeTweetDialogFragment.
-     */
     public static ComposeTweetDialogFragment newInstance(String title) {
         ComposeTweetDialogFragment fragment = new ComposeTweetDialogFragment();
         Bundle args = new Bundle();
@@ -55,6 +47,7 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        preferences = getActivity().getSharedPreferences("Drafts", Context.MODE_PRIVATE);
         return inflater.inflate(R.layout.fragment_compose_tweet, container);
     }
 
@@ -68,6 +61,7 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
         getDialog().setTitle(title);
         // Show soft keyboard automatically and request focus to field
         etComposeTweet.requestFocus();
+        getDraft();
         getDialog().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
@@ -78,6 +72,8 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
                 ComposeTweetDialogListener listener = (ComposeTweetDialogListener) getActivity();
                 String text = etComposeTweet.getText().toString();
                 listener.onFinishComposeTweet(text);
+                // Delete draft if exists
+                saveDraft("");
                 dismiss();
             }
         });
@@ -86,7 +82,8 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
         btnCloseDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               dismiss();
+                saveDraft(etComposeTweet.getText().toString());
+                dismiss();
             }
         });
 
@@ -113,5 +110,31 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
 
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveDraft(etComposeTweet.getText().toString());
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            getDraft();
+        }
+    }
+
+    private void saveDraft(String text) {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putString("draft", text);
+        edit.commit();
+    }
+
+    private void getDraft() {
+        SharedPreferences pref = getActivity().getSharedPreferences("Drafts", Context.MODE_PRIVATE);
+        String draft = pref.getString("draft", "");
+        etComposeTweet.setText(draft);
     }
 }

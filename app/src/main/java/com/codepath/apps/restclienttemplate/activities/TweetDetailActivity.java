@@ -24,6 +24,7 @@ public class TweetDetailActivity extends AppCompatActivity {
     TextView tvTime;
     ImageView ivTweetMediaImage;
     VideoView vvMediaVideo;
+    String draft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +66,6 @@ public class TweetDetailActivity extends AppCompatActivity {
         } else {
             vvMediaVideo.setVisibility(View.GONE);
         }
-
-
-
-
-
     }
+
 }
