@@ -2,7 +2,7 @@
 
 **Tweeter** is an android app that allows a user to view his Twitter timeline and post a new tweet. The app utilizes [Twitter REST API](https://developer.twitter.com/en/docs/api-reference-index).
 
-Time spent: **24** hours spent in total
+Time spent: **25** hours spent in total
 
 ## User Stories
 
