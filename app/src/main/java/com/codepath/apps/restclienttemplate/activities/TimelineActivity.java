@@ -145,6 +145,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     }
 
     private void populateTimeLineFromAPICall(final long since_id) {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
         final Handler handler = new Handler();
 
         Runnable runnable = new Runnable() {
@@ -197,7 +200,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         // No Network connection
         snackbar = Snackbar.make(findViewById(R.id.cLayout), R.string.snackbar_text, Snackbar.LENGTH_LONG);
         snackbar.show();
-
         // Read from DB
         tweetsList.addAll((ArrayList<Tweet>) SQLite.select().from(Tweet.class).queryList());
         adapter.notifyDataSetChanged();
