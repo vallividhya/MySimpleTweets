@@ -47,6 +47,7 @@ The following **additional** features are implemented:
 
 * [x] Silent video played in the timeline, for better UX
 * [x] Detail view shows video player, if video is available.
+* [x] Implemented Log out functionality
 
 ## Video Walkthrough
 
