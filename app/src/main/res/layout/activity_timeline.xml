@@ -29,11 +29,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_action_compose_tweet"
+            app:srcCompat="@drawable/ic_add_black_vector_24dp"
             app:layout_anchor="@id/rvTweet"
             app:backgroundTint="@color/colorPrimary"
             app:layout_anchorGravity="bottom|right|end"
-            android:onClick="onComposeNewTweet"/>
+            android:onClick="onComposeNewTweet"
+            />
     </android.support.design.widget.CoordinatorLayout>
 
 </layout>
