@@ -2,7 +2,7 @@
 
 **Tweeter** is an android app that allows a user to view his Twitter timeline and post a new tweet. The app utilizes [Twitter REST API](https://developer.twitter.com/en/docs/api-reference-index).
 
-Time spent: **25** hours spent in total
+Time spent: **26** hours spent in total
 
 ## User Stories
 
@@ -48,6 +48,7 @@ The following **additional** features are implemented:
 * [x] Silent video played in the timeline, for better UX
 * [x] Detail view shows video player, if video is available.
 * [x] Implemented Log out functionality
+* [x] Progress bar to show loading progress
 
 ## Video Walkthrough
 
@@ -65,6 +66,7 @@ Faced issues using DBFlow for the first time.
 - [Glide](https://github.com/bumptech/glide) - Image loading and caching library for Android
 - [DBFlow] (https://github.com/Raizlabs/DBFlow)
 - [Parceler]https://github.com/johncarl81/parceler
+- [Progress bar] https://github.com/wasabeef/awesome-android-ui/blob/master/pages/Progress.md
 
 ## License
 
