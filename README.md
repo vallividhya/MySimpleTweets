@@ -52,20 +52,18 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+https://www.dropbox.com/s/bme6v9241h89f71/tweeter-demo_ValliVidhyaVenkatesan.mp4?dl=0
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Faced issues using DBFlow for the first time. 
 
 ## Open-source libraries used
 
 - [Android Async HTTP](https://github.com/loopj/android-async-http) - Simple asynchronous HTTP requests with JSON parsing
 - [Glide](https://github.com/bumptech/glide) - Image loading and caching library for Android
-- [DBFlow]
-- [Parceler]
+- [DBFlow] (https://github.com/Raizlabs/DBFlow)
+- [Parceler]https://github.com/johncarl81/parceler
 
 ## License
 
