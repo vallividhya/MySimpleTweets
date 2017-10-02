@@ -4,6 +4,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:divider">@color/colorDivider</item>
+        <item name="windowNoTitle">true</item>
 
     </style>
 
@@ -13,8 +14,17 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowNoTitle">true</item>
         <!--<item name="android:textColorPrimary">@color/colorPrimaryText</item>-->
         <!--<item name="android:textColorSecondary">@color/colorSecondaryText</item>-->
         <item name="android:textSize">18dp</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="CustomDialog" parent="@style/ThemeOverlay.AppCompat.Dialog">
+        <item name="android:windowNoTitle">false</item>
     </style>
 </resources>

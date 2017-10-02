@@ -13,7 +13,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -68,6 +71,12 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     }
 
     private void setupViews() {
+        // Find the toolbar view inside the activity layout
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
+
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -114,6 +123,17 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
             }
         });
     }
+
+    // Menu icons are inflated just as they were with actionbar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_timeline, menu);
+
+        return true;
+    }
+
+
 
     private void loadNextDataFromApi(long page) {
         populateTimeLineFromAPICall(sinceId);
@@ -205,6 +225,13 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         };
         // This API does not have a rate-limit. So, can just be posted.
         handler.post(runnable);
+    }
+
+    // On click handler for log out menu item
+    public void onLogOut(MenuItem item) {
+        client.clearAccessToken();
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
     }
 
     public class NetworkChangeReceiver extends BroadcastReceiver {
