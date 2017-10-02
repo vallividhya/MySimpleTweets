@@ -49,6 +49,7 @@ The following **additional** features are implemented:
 * [x] Detail view shows video player, if video is available.
 * [x] Implemented Log out functionality
 * [x] Progress bar to show loading progress
+* [x] Snack bar showing offline mode. 
 
 ## Video Walkthrough
 
