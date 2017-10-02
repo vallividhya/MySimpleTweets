@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate.activities;
 
+import android.databinding.DataBindingUtil;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.R;
+import com.codepath.apps.restclienttemplate.databinding.ActivityTweetDetailBinding;
 import com.codepath.apps.restclienttemplate.fragments.ReplyTweetFragment;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
@@ -39,11 +41,13 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
     Button btnReply;
     Tweet tweet;
     private TwitterClient client;
+    private ActivityTweetDetailBinding binding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tweet_detail);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_tweet_detail);
         client = TwitterApp.getRestClient();
 
         ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
