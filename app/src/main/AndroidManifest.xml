@@ -11,7 +11,7 @@
     <application
         android:name=".helpers.database.DatabaseHelperApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher_tweeter"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
