@@ -10,5 +10,9 @@
     <string name="tweet_dialog_title">Let\'s tweet</string>
     <string name="composeTweetHint">What\'s up?</string>
     <string name="charCountString">/140</string>
+    <string name="replyBtnText">Reply</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -63,4 +63,15 @@
         android:layout_below="@id/tvBody"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:id="@+id/btnReply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/replyBtnText"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/colorWhite"
+        android:onClick="onReplyTweet"
+        android:backgroundTint="@color/colorPrimary"/>
+
 </RelativeLayout>

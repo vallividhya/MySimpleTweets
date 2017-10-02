@@ -73,15 +73,14 @@ public class TwitterClient extends OAuthBaseClient {
     }
 
     // POST new tweet
-    public void postNewTweet(String status, AsyncHttpResponseHandler handler) {
+    public void postTweet(String status, long tweetIdForReply, AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl("statuses/update.json");
 
 		RequestParams params = new RequestParams();
-		//try {
-			params.put("status", status);
-//		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//		}
+		params.put("status", status);
+		if (tweetIdForReply > 0) {
+			params.put("in_reply_to_status_id", tweetIdForReply);
+		}
 		client.post(apiUrl, params, handler);
 	}
 

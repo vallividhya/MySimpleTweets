@@ -1,13 +1,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    tools:context="com.codepath.apps.restclienttemplate.fragments.ComposeTweetDialogFragment">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.codepath.apps.restclienttemplate.fragments.ReplyTweetFragment">
 
     <EditText
-        android:id="@+id/etNewTweet"
+        android:id="@+id/etReplyTweet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/composeTweetHint"
@@ -17,7 +16,7 @@
 
 
     <Button
-        android:id="@+id/btn_tweet"
+        android:id="@+id/btn_reply"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tweet"
@@ -46,7 +45,4 @@
         android:background="@android:color/transparent"
         app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
-
 </RelativeLayout>
-
-

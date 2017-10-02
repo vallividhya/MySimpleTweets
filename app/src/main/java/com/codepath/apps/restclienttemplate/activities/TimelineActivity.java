@@ -185,7 +185,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
 
             @Override
             public void run() {
-                client.postNewTweet(tweetText, new JsonHttpResponseHandler() {
+                client.postTweet(tweetText, 0, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d("DEBUG", "post Successful");
