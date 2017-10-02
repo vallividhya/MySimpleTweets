@@ -8,6 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -57,6 +58,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     final AccountOwner[] accountOwner = new AccountOwner[1];
     NetworkChangeReceiver networkChangeReceiver;
     com.victor.loading.rotate.RotateLoading rotateloading;
+    Snackbar snackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,6 +195,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
 
     public void populateTimeLineFromLocalDB() {
         // No Network connection
+        snackbar = Snackbar.make(findViewById(R.id.cLayout), R.string.snackbar_text, Snackbar.LENGTH_INDEFINITE);
+        snackbar.show();
+
         // Read from DB
         tweetsList.addAll((ArrayList<Tweet>) SQLite.select().from(Tweet.class).queryList());
         adapter.notifyDataSetChanged();
