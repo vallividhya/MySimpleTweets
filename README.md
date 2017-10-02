@@ -67,7 +67,7 @@ Faced issues using DBFlow for the first time.
 - [Glide](https://github.com/bumptech/glide) - Image loading and caching library for Android
 - [DBFlow] (https://github.com/Raizlabs/DBFlow)
 - [Parceler]https://github.com/johncarl81/parceler
-- [Progress bar] https://github.com/wasabeef/awesome-android-ui/blob/master/pages/Progress.md
+- [Progress bar] https://github.com/yankai-victor/Loading
 
 ## License
 
