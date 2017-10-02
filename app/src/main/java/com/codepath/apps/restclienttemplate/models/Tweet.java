@@ -62,6 +62,21 @@ public class Tweet extends BaseModel{
                     }
                 }
             }
+            JSONObject entityExtendedJson = jsonObject.optJSONObject("extended_entities");
+            JSONObject mediaVideoJson = null;
+            if (entityExtendedJson != null) {
+                JSONArray mediaJArray = entityExtendedJson.optJSONArray("media");
+                // This JSON array has only one element, says Twitter API Docs
+                if (mediaJArray != null) {
+                    mediaVideoJson = mediaJArray.getJSONObject(0);
+                    if (mediaVideoJson != null) {
+                        if(mediaVideoJson.getString("type").equals("video")) {
+                            this.media = new Media(mediaVideoJson);
+                        }
+
+                    }
+                }
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();

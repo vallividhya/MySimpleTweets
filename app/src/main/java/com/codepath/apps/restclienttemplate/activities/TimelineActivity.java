@@ -167,7 +167,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         // No Network connection
         // Read from DB
         tweetsList.addAll((ArrayList<Tweet>) SQLite.select().from(Tweet.class).queryList());
-        Log.d("TEST..... ", " "  + tweetsList.get(0).getUser().getScreenName());
         adapter.notifyDataSetChanged();
     }
 

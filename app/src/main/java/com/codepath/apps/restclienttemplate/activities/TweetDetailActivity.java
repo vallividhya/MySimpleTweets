@@ -1,9 +1,13 @@
 package com.codepath.apps.restclienttemplate.activities;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.R;
@@ -18,7 +22,8 @@ public class TweetDetailActivity extends AppCompatActivity {
     TextView tvUserName;
     TextView tvBody;
     TextView tvTime;
-    public ImageView ivTweetMediaImage;
+    ImageView ivTweetMediaImage;
+    VideoView vvMediaVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,5 +45,30 @@ public class TweetDetailActivity extends AppCompatActivity {
         if (tweet.getMedia() != null) {
             Glide.with(getApplicationContext()).load(tweet.getMedia().getMediaUrl()).into(ivTweetMediaImage);
         }
+
+        vvMediaVideo = (VideoView) findViewById(R.id.vvDetailVideo);
+        MediaController mediaController = new MediaController(this);
+        vvMediaVideo.setMediaController(mediaController);
+
+        if (tweet.getMedia() != null && tweet.getMedia().getMediaType().equals("video") && tweet.getMedia().getVideoUrl() != null) {
+            vvMediaVideo.setVisibility(View.VISIBLE);
+            vvMediaVideo.setVideoPath(tweet.getMedia().getVideoUrl());
+            vvMediaVideo.requestFocus();
+            vvMediaVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                // Close the progress bar and play the video
+                public void onPrepared(MediaPlayer mp) {
+                    // Play sound in detail view
+                    mp.setVolume(1, 1);
+                    vvMediaVideo.start();
+                }
+            });
+        } else {
+            vvMediaVideo.setVisibility(View.GONE);
+        }
+
+
+
+
+
     }
 }

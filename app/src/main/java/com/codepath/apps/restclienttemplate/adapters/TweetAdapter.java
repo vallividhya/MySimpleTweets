@@ -1,12 +1,14 @@
 package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.R;
@@ -46,7 +48,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         // Get data according to position
         Tweet tweet = mTweetsList.get(position);
 
@@ -55,6 +57,23 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvBody.setText(tweet.getBody());
         holder.tvTime.setText(TimeUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
         Glide.with(context).load(tweet.getUser().getProfileImageUrl()).into(holder.ivProfileImage);
+
+        if (tweet.getMedia() != null && tweet.getMedia().getMediaType().equals("video") && tweet.getMedia().getVideoUrl() != null) {
+            holder.vvMediaVideo.setVisibility(View.VISIBLE);
+            holder.vvMediaVideo.setVideoPath(tweet.getMedia().getVideoUrl());
+            holder.vvMediaVideo.requestFocus();
+            holder.vvMediaVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                // Close the progress bar and play the video
+                public void onPrepared(MediaPlayer mp) {
+                    // Do not play sound
+                    mp.setVolume(0, 0);
+                    holder.vvMediaVideo.start();
+                }
+            });
+        } else {
+            holder.vvMediaVideo.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -82,6 +101,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         public TextView tvUserName;
         public TextView tvBody;
         public TextView tvTime;
+        public VideoView vvMediaVideo;
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -101,18 +121,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                     }
                 }
             });
+
+            vvMediaVideo = (VideoView) itemView.findViewById(R.id.vvMediaVideo);
         }
 
-//        @Override
-//        public void onClick(View v) {
-//            int position = getAdapterPosition(); // gets item position
-//            if (position != RecyclerView.NO_POSITION) { // Check if an item was deleted, but the user clicked it before the UI removed it
-//                Tweet tweet = mTweetsList.get(position);
-//                // We can access the data within the views
-//               Toast.makeText(v.getContext(), tweet.getBody(), Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent();
-//
-//            }
-//        }
     }
 }
