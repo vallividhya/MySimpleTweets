@@ -56,6 +56,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     static long sinceId = 1;
     final AccountOwner[] accountOwner = new AccountOwner[1];
     NetworkChangeReceiver networkChangeReceiver;
+    com.victor.loading.rotate.RotateLoading rotateloading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
+
+        rotateloading = (com.victor.loading.rotate.RotateLoading) findViewById(R.id.rotateloading);
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -149,7 +152,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         //adapter.clear();
-
+                        rotateloading.stop();
                         Log.d("DEBUG", response.toString());
                         for (int i = 0; i < response.length(); i++) {
                             try {
@@ -182,6 +185,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
                 });
             }
         };
+
+        rotateloading.start();
         // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
         handler.postDelayed(runnable, 500);
     }

@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate.adapters;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,17 +60,21 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         Glide.with(context).load(tweet.getUser().getProfileImageUrl()).into(holder.ivProfileImage);
 
         if (tweet.getMedia() != null && tweet.getMedia().getMediaType().equals("video") && tweet.getMedia().getVideoUrl() != null) {
-            holder.vvMediaVideo.setVisibility(View.VISIBLE);
-            holder.vvMediaVideo.setVideoPath(tweet.getMedia().getVideoUrl());
-            holder.vvMediaVideo.requestFocus();
-            holder.vvMediaVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                // Close the progress bar and play the video
-                public void onPrepared(MediaPlayer mp) {
-                    // Do not play sound
-                    mp.setVolume(0, 0);
-                    holder.vvMediaVideo.start();
-                }
-            });
+            try {
+                holder.vvMediaVideo.setVisibility(View.VISIBLE);
+                holder.vvMediaVideo.setVideoPath(tweet.getMedia().getVideoUrl());
+                holder.vvMediaVideo.requestFocus();
+                holder.vvMediaVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    // Close the progress bar and play the video
+                    public void onPrepared(MediaPlayer mp) {
+                        // Do not play sound
+                        mp.setVolume(0, 0);
+                        holder.vvMediaVideo.start();
+                    }
+                });
+            } catch (Exception e) {
+                Log.e("ERROR", e.getMessage());
+            }
         } else {
             holder.vvMediaVideo.setVisibility(View.GONE);
         }
