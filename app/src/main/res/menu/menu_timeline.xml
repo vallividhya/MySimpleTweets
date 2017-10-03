@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/miLogOut"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="Log Out"
         android:onClick="onLogOut"
+        android:tint="@color/colorWhite"
+        android:icon="@drawable/ic_logout_vector_24dp"
         >
     </item>
 </menu>

@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -33,6 +34,7 @@ import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
 import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 import com.codepath.apps.restclienttemplate.util.TimeUtil;
+import com.codepath.apps.restclienttemplate.util.UIHelperUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 
@@ -127,6 +129,10 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
                 startActivity(intent);
             }
         });
+
+        // Adding diciders for each tweet in the recycler view
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
+        rvTweets.addItemDecoration(itemDecoration);
     }
 
     // Menu icons are inflated just as they were with actionbar
@@ -134,6 +140,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_timeline, menu);
+        // Tinting the menu icon to theme colors
+        MenuItem item = menu.findItem(R.id.miLogOut);
+        UIHelperUtil.tintMenuIcon(TimelineActivity.this, item, android.R.color.white);
 
         return true;
     }

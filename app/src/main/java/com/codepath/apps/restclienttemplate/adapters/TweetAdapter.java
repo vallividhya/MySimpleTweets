@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -55,7 +56,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
         //Populate the views according to position
         holder.tvUserName.setText(tweet.getUser().getName());
-        holder.tvScreenName.setText(tweet.getUser().getScreenName());
+        holder.tvScreenName.setText("@" + tweet.getUser().getScreenName());
         holder.tvBody.setText(tweet.getBody());
         holder.tvTime.setText(TimeUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
         Glide.with(context).load(tweet.getUser().getProfileImageUrl()).into(holder.ivProfileImage);
@@ -114,9 +115,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             super(itemView);
             ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
+            Typeface userNameFont = Typeface.createFromAsset(context.getAssets(), "fonts/HelveticaNeue-Bold.ttf");
+            tvUserName.setTypeface(userNameFont);
+
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
+            Typeface bodyFont = Typeface.createFromAsset(context.getAssets(), "fonts/HelveticaNeue-Regular.ttf");
+            tvBody.setTypeface(bodyFont);
+
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);
             tvScreenName = (TextView) itemView.findViewById(R.id.tvScreenName);
+            tvScreenName.setTypeface(userNameFont);
+
             itemView.setOnClickListener(new View.OnClickListener() {
 
                 @Override
