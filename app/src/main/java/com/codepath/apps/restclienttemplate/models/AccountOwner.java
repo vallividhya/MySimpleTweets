@@ -12,6 +12,8 @@ import org.parceler.Parcel;
 @Parcel
 public class AccountOwner extends BaseModel {
 
+    String name;
+
     String draftTweet;
 
     String screenName;
@@ -19,6 +21,14 @@ public class AccountOwner extends BaseModel {
     String profileImageUrl;
 
     public AccountOwner() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getScreenName() {
@@ -47,6 +57,7 @@ public class AccountOwner extends BaseModel {
 
     public static AccountOwner fromJSON(JSONObject jsonObject) throws JSONException {
         AccountOwner accountOwner = new AccountOwner();
+        accountOwner.setName(jsonObject.getString("name"));
         accountOwner.setScreenName(jsonObject.getString("screen_name"));
         accountOwner.setProfileImageUrl(jsonObject.getString("profile_image_url"));
         return accountOwner;

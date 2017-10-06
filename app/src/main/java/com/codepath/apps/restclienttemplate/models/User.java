@@ -31,6 +31,16 @@ public class User extends BaseModel {
     @Column
     String profileImageUrl;
 
+    @Column
+    long followers;
+
+    @Column
+    long following;
+
+    @Column
+    String tagLine;
+
+
     public long getUserId() {
         return userId;
     }
@@ -63,6 +73,30 @@ public class User extends BaseModel {
         this.profileImageUrl = profileImageUrl;
     }
 
+    public long getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(long followers) {
+        this.followers = followers;
+    }
+
+    public long getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(long following) {
+        this.following = following;
+    }
+
+    public String getTagLine() {
+        return tagLine;
+    }
+
+    public void setTagLine(String tagLine) {
+        this.tagLine = tagLine;
+    }
+
     public User(JSONObject jsonObject) {
         super();
         try {
@@ -70,6 +104,9 @@ public class User extends BaseModel {
             this.userId = jsonObject.getLong("id");
             this.screenName = jsonObject.getString("screen_name");
             this.profileImageUrl = jsonObject.getString("profile_image_url");
+            this.tagLine = jsonObject.getString("description");
+            this.followers = jsonObject.getInt("followers_count");
+            this.following = jsonObject.getInt("friends_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }

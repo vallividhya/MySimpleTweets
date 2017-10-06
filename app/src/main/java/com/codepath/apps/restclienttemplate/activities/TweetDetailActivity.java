@@ -50,10 +50,10 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tweet_detail);
         client = TwitterApp.getRestClient();
 
-        ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
-        tvUserName = (TextView) findViewById(R.id.tvUserName);
-        tvBody = (TextView) findViewById(R.id.tvBody);
-        tvTime = (TextView) findViewById(R.id.tvTime);
+        ivProfileImage = binding.ivProfileImage; //(ImageView) findViewById(R.id.ivProfileImage);
+        tvUserName = binding.tvUserName; //(TextView) findViewById(R.id.tvUserName);
+        tvBody = binding.tvBody; //(TextView) findViewById(R.id.tvBody);
+        tvTime = binding.tvTime; //(TextView) findViewById(R.id.tvTime);
 
         tweet = Parcels.unwrap(getIntent().getParcelableExtra("tweet"));
 
@@ -62,12 +62,12 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
         tvTime.setText(TimeUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
         Glide.with(getApplicationContext()).load(tweet.getUser().getProfileImageUrl()).into(ivProfileImage);
 
-        ivTweetMediaImage = (ImageView) findViewById(R.id.ivMediaImage);
+        ivTweetMediaImage = binding.ivMediaImage; //(ImageView) findViewById(R.id.ivMediaImage);
         if (tweet.getMedia() != null) {
             Glide.with(getApplicationContext()).load(tweet.getMedia().getMediaUrl()).into(ivTweetMediaImage);
         }
 
-        vvMediaVideo = (VideoView) findViewById(R.id.vvDetailVideo);
+        vvMediaVideo = binding.vvDetailVideo; // (VideoView) findViewById(R.id.vvDetailVideo);
         MediaController mediaController = new MediaController(this);
         vvMediaVideo.setMediaController(mediaController);
 
@@ -87,7 +87,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
             vvMediaVideo.setVisibility(View.GONE);
         }
 
-        btnReply = (Button) findViewById(R.id.btnReply);
+        btnReply = binding.btnReply; //(Button) findViewById(R.id.btnReply);
     }
 
 

@@ -3,10 +3,12 @@ package com.codepath.apps.restclienttemplate.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.R;
+import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
+import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class ComposeTweetDialogFragment extends DialogFragment   {
@@ -27,6 +36,7 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
     private ImageButton btnCloseDialog;
     private TextView tvCharCount;
     SharedPreferences preferences;
+    TwitterClient client;
 
     public ComposeTweetDialogFragment() {
         // Required empty public constructor
@@ -34,6 +44,12 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
 
     public interface ComposeTweetDialogListener  {
         void onFinishComposeTweet(String tweetText);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        client = TwitterApp.getRestClient();
     }
 
     public static ComposeTweetDialogFragment newInstance(String title) {
@@ -72,10 +88,12 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
             public void onClick(View v) {
                 ComposeTweetDialogListener listener = (ComposeTweetDialogListener) getActivity();
                 String text = etComposeTweet.getText().toString();
+                // Post tweet
+                postNewTweet(text);
                 listener.onFinishComposeTweet(text);
                 // Delete draft if exists
                 saveDraft("");
-                Toast.makeText(getActivity().getApplicationContext(), "Tweet posted", Toast.LENGTH_SHORT);
+                Toast.makeText(getContext(), "Tweet posted", Toast.LENGTH_SHORT);
                 dismiss();
             }
         });
@@ -113,6 +131,33 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
             }
         });
     }
+
+    // Compose TweetInDB API Call
+    private void postNewTweet(final String tweetText) {
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+
+            @Override
+            public void run() {
+                client.postTweet(tweetText, 0, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Log.d("DEBUG", "post Successful");
+
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Log.d("DEBUG", "post failed " + errorResponse.toString());
+                        Toast.makeText(getContext(), "Failed to post", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        };
+        // This API does not have a rate-limit. So, can just be posted.
+        handler.post(runnable);
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

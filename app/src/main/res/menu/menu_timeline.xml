@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/miProfile"
+        android:icon="@drawable/ic_person_white_24dp"
+        android:title="My profile"
+        app:showAsAction="ifRoom"
+        android:onClick="onProfileView"/>
+    <item
         android:id="@+id/miLogOut"
         app:showAsAction="always"
         android:title="Log Out"
@@ -10,4 +16,5 @@
         android:icon="@drawable/ic_logout_vector_24dp"
         >
     </item>
+
 </menu>

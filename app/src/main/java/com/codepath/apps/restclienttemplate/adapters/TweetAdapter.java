@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.R;
+import com.codepath.apps.restclienttemplate.activities.ProfileActivity;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.util.TimeUtil;
 
@@ -28,14 +30,15 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
     ArrayList<Tweet> mTweetsList;
     Context context;
-    OnItemClickListener onItemClickListener;
+    TweetAdapterOnItemClickListener onItemClickListener;
 
-    public interface OnItemClickListener {
+    public interface TweetAdapterOnItemClickListener {
         void onItemClick(View itemView, int position);
     }
 
-    public TweetAdapter(ArrayList<Tweet> tweetsList) {
+    public TweetAdapter(ArrayList<Tweet> tweetsList, TweetAdapterOnItemClickListener listener) {
         mTweetsList = tweetsList;
+        onItemClickListener = listener;
     }
 
     // Create a new TweetInDB row and cache references into View Holder
@@ -59,6 +62,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvScreenName.setText("@" + tweet.getUser().getScreenName());
         holder.tvBody.setText(tweet.getBody());
         holder.tvTime.setText(TimeUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
+        holder.ivProfileImage.setTag(R.id.ivProfileImage, tweet.getUser().getScreenName());
         Glide.with(context).load(tweet.getUser().getProfileImageUrl()).into(holder.ivProfileImage);
 
         if (tweet.getMedia() != null && tweet.getMedia().getMediaType().equals("video") && tweet.getMedia().getVideoUrl() != null) {
@@ -98,9 +102,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
+//    public void setOnItemClickListener(TweetAdapterOnItemClickListener onItemClickListener) {
+//        this.onItemClickListener = onItemClickListener;
+//    }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -114,6 +118,15 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         public ViewHolder(final View itemView) {
             super(itemView);
             ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
+            ivProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String screenName = (String) v.getTag(R.id.ivProfileImage);
+                    Intent intent = new Intent(context, ProfileActivity.class);
+                    intent.putExtra("screen_name", screenName);
+                    context.startActivity(intent);
+                }
+            });
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             Typeface userNameFont = Typeface.createFromAsset(context.getAssets(), "fonts/HelveticaNeue-Bold.ttf");
             tvUserName.setTypeface(userNameFont);
@@ -124,7 +137,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);
             tvScreenName = (TextView) itemView.findViewById(R.id.tvScreenName);
-            tvScreenName.setTypeface(userNameFont);
+            tvScreenName.setTypeface(bodyFont);
 
             itemView.setOnClickListener(new View.OnClickListener() {
 
