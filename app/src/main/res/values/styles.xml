@@ -20,6 +20,17 @@
         <item name="android:textSize">18dp</item>
     </style>
 
+    <style name="AppThemeNight" parent="Theme.AppCompat.DayNight">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorWhite</item>
+        <item name="windowNoTitle">true</item>
+        <!--<item name="android:textColorPrimary">@color/colorPrimaryText</item>-->
+        <!--<item name="android:textColorSecondary">@color/colorSecondaryText</item>-->
+        <item name="android:textSize">18dp</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

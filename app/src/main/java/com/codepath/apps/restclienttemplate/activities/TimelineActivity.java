@@ -122,7 +122,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
 
     public class NetworkChangeReceiver extends BroadcastReceiver {
 
-
         @Override
         public void onReceive(Context context, Intent intent) {
             if (NetworkUtil.isNetworkAvailable(context)) {

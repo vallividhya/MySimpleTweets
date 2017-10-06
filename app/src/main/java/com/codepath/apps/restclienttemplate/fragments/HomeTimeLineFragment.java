@@ -74,7 +74,7 @@ public class HomeTimeLineFragment extends TweetsListFragment {
 
         // rotateloading.start();
         // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
-        handler.postDelayed(runnable, 500);
+        handler.postDelayed(runnable, 300);
     }
 
     private void getAccountOwnerInfo() {
@@ -84,7 +84,7 @@ public class HomeTimeLineFragment extends TweetsListFragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                client.getAccountOwnerInfo("", new JsonHttpResponseHandler() {
+                client.getAccountOwnerInfo(new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d("DEBUG", response.toString());

@@ -30,6 +30,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private TwitterClient client;
     private ActivityProfileBinding binding;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +39,13 @@ public class ProfileActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_profile);
 
         // Find the toolbar view inside the activity layout
-        final Toolbar toolbar = binding.includedToolBar.toolbar;
+        toolbar = binding.includedToolBar.toolbar;
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
 
-        String screenName = getIntent().getStringExtra("screen_name");
+        String screenName = "";
+        screenName = getIntent().getStringExtra("screen_name");
         // Create user fragment
         UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(screenName);
 
@@ -52,22 +54,37 @@ public class ProfileActivity extends AppCompatActivity {
         ft.commit();
 
         client = TwitterApp.getRestClient();
-        client.getUserInfo(screenName, new JsonHttpResponseHandler() {
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    // Deserialize user object
-                    User user = User.fromJson(response);
-                    // Display screenName on the action bar
-                    toolbar.setTitle("@" + user.getScreenName());
+        if (screenName == null) {
+            client.getAccountOwnerInfo(new JsonHttpResponseHandler() {
 
-                    populateUserHeadline(user);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    getUserFromResponse(response);
                 }
-            }
-        });
+            });
+        } else {
+            client.getUserInfo(screenName, new JsonHttpResponseHandler() {
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    getUserFromResponse(response);
+                }
+            });
+        }
+    }
+
+    private void getUserFromResponse(JSONObject response) {
+        try {
+            // Deserialize user object
+            User user = User.fromJson(response);
+            // Display screenName on the action bar
+            toolbar.setTitle("@" + user.getScreenName());
+
+            populateUserHeadline(user);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void populateUserHeadline(User user) {
@@ -80,18 +97,18 @@ public class ProfileActivity extends AppCompatActivity {
         tvName.setText(user.getName());
         Glide.with(this).load(user.getProfileImageUrl()).into(ivProfileImage);
 
-        SpannableStringBuilder str = new SpannableStringBuilder(user.getFollowers() + " Followers");
-        str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        str.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableStringBuilder str = new SpannableStringBuilder(user.getFollowers() + "");
+        str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, str.length() - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        str.setSpan(new ForegroundColorSpan(Color.BLACK), 0, str.length() - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 
-        tvFollowers.setText(str);
+        tvFollowers.setText(str + " Followers");
 
-        SpannableStringBuilder str1 = new SpannableStringBuilder(user.getFollowing() + " Following");
+        SpannableStringBuilder str1 = new SpannableStringBuilder(user.getFollowing() + "");
         str1.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        str1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        str1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, str1.length() - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        tvFollowing.setText(str1);
+        tvFollowing.setText(str1 + " Following");
         tvTagline.setText(user.getTagLine());
     }
 

@@ -76,7 +76,7 @@ public class MentionsTimelineFragment extends TweetsListFragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                client.getAccountOwnerInfo("", new JsonHttpResponseHandler() {
+                client.getAccountOwnerInfo(new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d("DEBUG", response.toString());

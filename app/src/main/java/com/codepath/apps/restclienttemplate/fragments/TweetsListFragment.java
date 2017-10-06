@@ -170,8 +170,5 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
 //
     }
 
-    //insertTweetOnTimeLine
-    //
-
     abstract void loadMore(long sinceId);
 }

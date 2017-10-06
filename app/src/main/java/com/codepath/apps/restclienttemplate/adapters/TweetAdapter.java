@@ -67,8 +67,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
         if (tweet.getMedia() != null && tweet.getMedia().getMediaType().equals("video") && tweet.getMedia().getVideoUrl() != null) {
             try {
-                holder.vvMediaVideo.setVisibility(View.VISIBLE);
+                //holder.vvMediaVideo.setVisibility(View.VISIBLE);
                 holder.vvMediaVideo.setVideoPath(tweet.getMedia().getVideoUrl());
+                holder.vvMediaVideo.setVisibility(View.VISIBLE);
                 holder.vvMediaVideo.requestFocus();
                 holder.vvMediaVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     // Close the progress bar and play the video
