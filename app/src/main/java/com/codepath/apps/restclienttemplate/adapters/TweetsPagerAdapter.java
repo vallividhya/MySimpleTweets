@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import com.astuetz.PagerSlidingTabStrip;
+import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.fragments.HomeTimeLineFragment;
 import com.codepath.apps.restclienttemplate.fragments.MentionsTimelineFragment;
 
@@ -11,10 +13,11 @@ import com.codepath.apps.restclienttemplate.fragments.MentionsTimelineFragment;
  * Created by vidhya on 10/4/17.
  */
 
-public class TweetsPagerAdapter extends SmartFragmentStatePagerAdapter {
+public class TweetsPagerAdapter extends SmartFragmentStatePagerAdapter implements PagerSlidingTabStrip.IconTabProvider {
 
     private String tabTitles[] = new String[] {"Home", "Mentions"};
     private Context context;
+    private int tabIcons[] = {R.drawable.ic_home_gray, R.drawable.ic_mentions_gray};
 
     public TweetsPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
@@ -54,8 +57,14 @@ public class TweetsPagerAdapter extends SmartFragmentStatePagerAdapter {
      * @param position The position of the title requested
      * @return A title for the requested page
      */
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//        return tabTitles[position];
+//    }
+
+
     @Override
-    public CharSequence getPageTitle(int position) {
-        return tabTitles[position];
+    public int getPageIconResId(int position) {
+        return tabIcons[position];
     }
 }

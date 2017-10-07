@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.adapters.SmartFragmentStatePagerAdapter;
 import com.codepath.apps.restclienttemplate.adapters.TweetsPagerAdapter;
@@ -53,8 +53,12 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         viewPager = binding.viewpager;
         viewPager.setAdapter(adapterViewPager);
 
-        TabLayout tabLayout = binding.slidingTabs;
-        tabLayout.setupWithViewPager(viewPager);
+        PagerSlidingTabStrip tabStrip = binding.tabs;
+        tabStrip.setShouldExpand(true);
+        tabStrip.setViewPager(viewPager);
+
+        //TabLayout tabLayout = binding.slidingTabs;
+        //tabLayout.setupWithViewPager(viewPager);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);

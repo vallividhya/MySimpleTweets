@@ -66,7 +66,7 @@ public class HomeTimeLineFragment extends TweetsListFragment {
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                         // Error could be 423. In such a case, display from local DB.
                         //populateTimeLineFromLocalDB();
-                        Log.d("ERROR", errorResponse.toString());
+                        //Log.d("ERROR", errorResponse.toString());
                     }
                 });
             }

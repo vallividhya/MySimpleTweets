@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate.activities;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,7 +16,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.databinding.ActivityProfileBinding;
+import com.codepath.apps.restclienttemplate.fragments.TweetsListFragment;
 import com.codepath.apps.restclienttemplate.fragments.UserTimelineFragment;
+import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
@@ -23,10 +26,11 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener {
 
     private TwitterClient client;
     private ActivityProfileBinding binding;
@@ -97,20 +101,27 @@ public class ProfileActivity extends AppCompatActivity {
         tvName.setText(user.getName());
         Glide.with(this).load(user.getProfileImageUrl()).into(ivProfileImage);
 
-        SpannableStringBuilder str = new SpannableStringBuilder(user.getFollowers() + "");
-        str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, str.length() - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        str.setSpan(new ForegroundColorSpan(Color.BLACK), 0, str.length() - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        String follow = String.valueOf(user.getFollowers());
+        SpannableStringBuilder str = new SpannableStringBuilder(follow);
+        str.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, follow.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        str.setSpan(new ForegroundColorSpan(Color.BLACK), 0, follow.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        str.append(" Followers");
+        tvFollowers.setText(str, TextView.BufferType.SPANNABLE);
 
-
-        tvFollowers.setText(str + " Followers");
-
-        SpannableStringBuilder str1 = new SpannableStringBuilder(user.getFollowing() + "");
-        str1.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        str1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, str1.length() - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        tvFollowing.setText(str1 + " Following");
+        String follow1 = String.valueOf(user.getFollowing());
+        SpannableStringBuilder str1 = new SpannableStringBuilder(follow1);
+        str1.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, follow1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        str1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, follow1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        str1.append(" Following");
+        tvFollowing.setText(str1,  TextView.BufferType.SPANNABLE);
         tvTagline.setText(user.getTagLine());
     }
 
 
+    @Override
+    public void onTweetSelected(Tweet tweet) {
+        Intent intent = new Intent(this, TweetDetailActivity.class);
+        intent.putExtra("tweet", Parcels.wrap(tweet));
+        startActivity(intent);
+    }
 }
