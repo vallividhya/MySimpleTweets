@@ -21,13 +21,13 @@ import cz.msebera.android.httpclient.Header;
 
 public class MentionsTimelineFragment extends TweetsListFragment {
 
-    private TwitterClient client;
-    final AccountOwner[] accountOwner = new AccountOwner[1];
+    private TwitterClient mClient;
+    final AccountOwner[] mAccountOwner = new AccountOwner[1];
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        client = TwitterApp.getRestClient();
+        mClient = TwitterApp.getRestClient();
         populateTimeLineFromAPICall(1);
         getAccountOwnerInfo();
     }
@@ -41,7 +41,7 @@ public class MentionsTimelineFragment extends TweetsListFragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                client.getMentionsTimeLine(since_id, new JsonHttpResponseHandler() {
+                mClient.getMentionsTimeLine(since_id, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         addItems(response);
@@ -76,13 +76,13 @@ public class MentionsTimelineFragment extends TweetsListFragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                client.getAccountOwnerInfo(new JsonHttpResponseHandler() {
+                mClient.getAccountOwnerInfo(new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d("DEBUG", response.toString());
 
                         try {
-                            accountOwner[0] = AccountOwner.fromJSON(response);
+                            mAccountOwner[0] = AccountOwner.fromJSON(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

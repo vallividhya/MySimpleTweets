@@ -12,13 +12,13 @@ import org.parceler.Parcel;
 @Parcel
 public class AccountOwner extends BaseModel {
 
-    String name;
+    private String name;
 
-    String draftTweet;
+    private String draftTweet;
 
-    String screenName;
+    private String screenName;
 
-    String profileImageUrl;
+    private String profileImageUrl;
 
     public AccountOwner() {
     }

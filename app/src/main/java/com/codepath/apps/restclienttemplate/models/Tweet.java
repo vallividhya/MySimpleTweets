@@ -25,19 +25,19 @@ import org.parceler.Parcel;
 public class Tweet extends BaseModel{
 
     @PrimaryKey @Column
-    long tweetId;
+    private long tweetId;
 
     @Column
-    String body;
+    private String body;
 
     @Column
-    String createdAt;
+    private String createdAt;
 
     @Column @ForeignKey(saveForeignKeyModel = true)
-    User user;
+    private User user;
 
     @Column @Nullable @ForeignKey(saveForeignKeyModel = true)
-    Media media;
+    private Media media;
 
     // empty constructor needed by the Parceler library
     public Tweet() {

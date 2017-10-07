@@ -30,18 +30,18 @@ import java.util.ArrayList;
 public abstract class TweetsListFragment extends Fragment implements TweetAdapter.TweetAdapterOnItemClickListener {
 
     private TweetAdapter adapter;
-    ArrayList<Tweet> tweetsList;
-    RecyclerView rvTweets;
-    private FragmentTweetsListBinding binding;
-    EndlessRecyclerViewScrollListener scrollListener;
-    SwipeRefreshLayout swipeContainer;
+    private ArrayList<Tweet> mTweetsList;
+    private RecyclerView rvTweets;
+    private FragmentTweetsListBinding mBinding;
+    private EndlessRecyclerViewScrollListener mScrollListener;
+    private SwipeRefreshLayout swipeContainer;
     Snackbar snackbar;
-    LinearLayoutManager layoutManager;
-    static long sinceId = 1;
+    private LinearLayoutManager layoutManager;
+    private static long sSinceId = 1;
    // com.victor.loading.rotate.RotateLoading rotateloading;
 
     public interface TweetSelectedListener {
-        // Handle tweet selection
+        // Handle mTweet selection
         public void onTweetSelected(Tweet tweet);
     }
 
@@ -55,10 +55,10 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        binding = binding.inflate(inflater, container, false);
+        mBinding = mBinding.inflate(inflater, container, false);
         setupViews();
         // Inflate the layout for this fragment
-        return binding.getRoot();
+        return mBinding.getRoot();
 
     }
 
@@ -69,9 +69,9 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
 //        // Make sure the toolbar exists in the activity and is not null
 //        setSupportActionBar(toolbar);
 
-        //rotateloading = binding.rotateloading; //(com.victor.loading.rotate.RotateLoading) findViewById(R.id.rotateloading);
+        //rotateloading = mBinding.rotateloading; //(com.victor.loading.rotate.RotateLoading) findViewById(R.id.rotateloading);
 
-        swipeContainer = binding.swipeContainer; //(SwipeRefreshLayout) findViewById(swipeContainer);
+        swipeContainer = mBinding.swipeContainer; //(SwipeRefreshLayout) findViewById(swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -83,7 +83,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
 //                } else {
 //                    populateTimeLineFromLocalDB();
 //                }
-                binding.swipeContainer.setRefreshing(false);
+                mBinding.swipeContainer.setRefreshing(false);
             }
         });
         // Configure the refreshing colors
@@ -92,25 +92,25 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        rvTweets = binding.rvTweet; //(RecyclerView) findViewById(R.id.rvTweet);
-        tweetsList = new ArrayList<>();
+        rvTweets = mBinding.rvTweet; //(RecyclerView) findViewById(R.id.rvTweet);
+        mTweetsList = new ArrayList<>();
         layoutManager = new LinearLayoutManager(getContext());
-        adapter = new TweetAdapter(tweetsList, this);
+        adapter = new TweetAdapter(mTweetsList, this);
         rvTweets.setLayoutManager(layoutManager);
         rvTweets.setAdapter(adapter);
 
-        // Adding dividers for each tweet in the recycler view
+        // Adding dividers for each mTweet in the recycler view
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         rvTweets.addItemDecoration(itemDecoration);
 
-        scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
+        mScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(long page, int totalItemsCount, RecyclerView view) {
-                //loadNextDataFromApi(sinceId);
-                loadMore(sinceId);
+                //loadNextDataFromApi(sSinceId);
+                loadMore(sSinceId);
             }
         };
-        rvTweets.addOnScrollListener(scrollListener);
+        rvTweets.addOnScrollListener(mScrollListener);
     }
 
     public void addItems(JSONArray response) {
@@ -118,21 +118,21 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
             try {
                 Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
                 Log.d("DEBUG", " since id = " + tweet.getTweetId());
-                tweetsList.add(tweet);
+                mTweetsList.add(tweet);
                 // Notify the adapter of the item last inserted
-                adapter.notifyItemInserted(tweetsList.size() - 1);
+                adapter.notifyItemInserted(mTweetsList.size() - 1);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         // sinceid would be the id of the last item in the array list.
-        sinceId = tweetsList.get(tweetsList.size() - 1).getTweetId();
+        sSinceId = mTweetsList.get(mTweetsList.size() - 1).getTweetId();
 
     }
 
     public void insertTweetOnTimeLine(AccountOwner accountOwner, String tweetText) {
-        //Insert this tweet in the timeline to appear first
+        //Insert this mTweet in the timeline to appear first
         Tweet tweet = new Tweet();
         tweet.setCreatedAt(TimeUtil.getTwitterFormatForCurrentTime());
         tweet.setBody(tweetText);
@@ -142,22 +142,22 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         user.setScreenName(accountOwner.getScreenName());
         user.setProfileImageUrl(accountOwner.getProfileImageUrl());
         tweet.setUser(user);
-        // Insert tweet even before a refresh
-        //Insert tweet at adapter position 0
-         tweetsList.add(0, tweet);
+        // Insert mTweet even before a refresh
+        //Insert mTweet at adapter position 0
+         mTweetsList.add(0, tweet);
          adapter.notifyItemInserted(0);
-        //To show the latest tweet added by account owner on the top
+        //To show the latest mTweet added by account owner on the top
          rvTweets.smoothScrollToPosition(0);
     }
 
     public void addItemsFromDatabase() {
-        tweetsList.addAll((ArrayList<Tweet>) SQLite.select().from(Tweet.class).queryList());
+        mTweetsList.addAll((ArrayList<Tweet>) SQLite.select().from(Tweet.class).queryList());
         adapter.notifyDataSetChanged();
     }
 
     public void populateTimeLineFromLocalDB() {
         // No Network connection
-//        snackbar = Snackbar.make(binding., R.string.snackbar_text, Snackbar.LENGTH_LONG);
+//        snackbar = Snackbar.make(mBinding., R.string.snackbar_text, Snackbar.LENGTH_LONG);
 //        snackbar.show();
         // Read from DB
        addItemsFromDatabase();
@@ -165,7 +165,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
 
     @Override
     public void onItemClick(View itemView, int position) {
-        Tweet tweet = tweetsList.get(position);
+        Tweet tweet = mTweetsList.get(position);
         ((TweetSelectedListener) getActivity()).onTweetSelected(tweet);
 //
     }

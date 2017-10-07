@@ -28,9 +28,9 @@ import java.util.List;
 
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> {
 
-    ArrayList<Tweet> mTweetsList;
-    Context context;
-    TweetAdapterOnItemClickListener onItemClickListener;
+    private ArrayList<Tweet> mTweetsList;
+    private Context mContext;
+    private TweetAdapterOnItemClickListener onItemClickListener;
 
     public interface TweetAdapterOnItemClickListener {
         void onItemClick(View itemView, int position);
@@ -44,8 +44,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     // Create a new TweetInDB row and cache references into View Holder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
+        mContext = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(mContext);
 
         View tweetView =  inflater.inflate(R.layout.item_tweet, parent, false);
         ViewHolder viewHolder = new ViewHolder(tweetView);
@@ -63,7 +63,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvBody.setText(tweet.getBody());
         holder.tvTime.setText(TimeUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
         holder.ivProfileImage.setTag(R.id.ivProfileImage, tweet.getUser().getScreenName());
-        Glide.with(context).load(tweet.getUser().getProfileImageUrl()).into(holder.ivProfileImage);
+        Glide.with(mContext).load(tweet.getUser().getProfileImageUrl()).into(holder.ivProfileImage);
 
         if (tweet.getMedia() != null && tweet.getMedia().getMediaType().equals("video") && tweet.getMedia().getVideoUrl() != null) {
             try {
@@ -123,17 +123,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     String screenName = (String) v.getTag(R.id.ivProfileImage);
-                    Intent intent = new Intent(context, ProfileActivity.class);
+                    Intent intent = new Intent(mContext, ProfileActivity.class);
                     intent.putExtra("screen_name", screenName);
-                    context.startActivity(intent);
+                    mContext.startActivity(intent);
                 }
             });
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
-            Typeface userNameFont = Typeface.createFromAsset(context.getAssets(), "fonts/HelveticaNeue-Bold.ttf");
+            Typeface userNameFont = Typeface.createFromAsset(mContext.getAssets(), "fonts/HelveticaNeue-Bold.ttf");
             tvUserName.setTypeface(userNameFont);
 
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
-            Typeface bodyFont = Typeface.createFromAsset(context.getAssets(), "fonts/HelveticaNeue-Regular.ttf");
+            Typeface bodyFont = Typeface.createFromAsset(mContext.getAssets(), "fonts/HelveticaNeue-Regular.ttf");
             tvBody.setTypeface(bodyFont);
 
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);

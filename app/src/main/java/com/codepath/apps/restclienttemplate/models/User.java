@@ -20,25 +20,25 @@ public class User extends BaseModel {
 
     @PrimaryKey
     @Column
-    long userId;
+    private long userId;
 
     @Column
-    String name;
+    private String name;
 
     @Column
-    String screenName;
+    private String screenName;
 
     @Column
-    String profileImageUrl;
+    private String profileImageUrl;
 
     @Column
-    long followers;
+    private long followers;
 
     @Column
-    long following;
+    private long following;
 
     @Column
-    String tagLine;
+    private String tagLine;
 
 
     public long getUserId() {

@@ -18,7 +18,7 @@ import cz.msebera.android.httpclient.Header;
  */
 
 public class UserTimelineFragment extends TweetsListFragment {
-    private TwitterClient client;
+    private TwitterClient mClient;
 
     public static UserTimelineFragment newInstance(String screenName) {
         UserTimelineFragment userTimelineFragment = new UserTimelineFragment();
@@ -31,7 +31,7 @@ public class UserTimelineFragment extends TweetsListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        client = TwitterApp.getRestClient();
+        mClient = TwitterApp.getRestClient();
         populateUserTimeLineFromAPICall(1);
     }
 
@@ -47,7 +47,7 @@ public class UserTimelineFragment extends TweetsListFragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                client.getUserTimeLine(since_id, screenName, new JsonHttpResponseHandler() {
+                mClient.getUserTimeLine(since_id, screenName, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         addItems(response);

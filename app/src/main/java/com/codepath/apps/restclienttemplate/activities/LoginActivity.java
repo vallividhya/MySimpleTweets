@@ -14,12 +14,12 @@ import com.codepath.oauth.OAuthLoginActionBarActivity;
 
 public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 
-	private ActivityLoginBinding binding;
+	private ActivityLoginBinding mBinding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+		mBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
 		// Find the toolbar view inside the activity layout
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
 		// Sets the Toolbar to act as the ActionBar for this Activity window.
@@ -31,7 +31,7 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	// Inflate the menu; this adds items to the action bar if it is present.
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.login, menu);
+		getMenuInflater().inflate(R.menu.menu_login, menu);
 		return true;
 	}
 
@@ -53,7 +53,7 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 
 	// Click handler method for the button used to start OAuth flow
 	// Uses the client to initiate OAuth authorization
-	// This should be tied to a button used to login
+	// This should be tied to a button used to menu_login
 	public void loginToRest(View view) {
 		getClient().connect();
 	}

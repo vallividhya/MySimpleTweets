@@ -27,8 +27,8 @@ public class ReplyTweetFragment extends DialogFragment {
     private Button btnTweet;
     private ImageButton btnCloseDialog;
     private TextView tvCharCount;
-    SharedPreferences preferences;
-    Tweet tweet;
+    private SharedPreferences mPreferences;
+    Tweet mTweet;
 
     public ReplyTweetFragment() {
         // Required empty public constructor
@@ -50,8 +50,8 @@ public class ReplyTweetFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        preferences = getActivity().getSharedPreferences("Drafts", Context.MODE_PRIVATE);
-        tweet = Parcels.unwrap(getArguments().getParcelable("tweet"));
+        mPreferences = getActivity().getSharedPreferences("Drafts", Context.MODE_PRIVATE);
+        mTweet = Parcels.unwrap(getArguments().getParcelable("mTweet"));
         return inflater.inflate(R.layout.fragment_reply_tweet, container);
     }
 
@@ -62,11 +62,11 @@ public class ReplyTweetFragment extends DialogFragment {
         // Get field from view
         etComposeTweet = (EditText) view.findViewById(R.id.etReplyTweet);
         // Fetch arguments from bundle and set title
-        String title = getArguments().getString("title", "Let's tweet");
+        String title = getArguments().getString("title", "Let's mTweet");
         getDialog().setTitle(title);
 
         //getDraft();
-        etComposeTweet.append("@" + tweet.getUser().getScreenName() + " ");
+        etComposeTweet.append("@" + mTweet.getUser().getScreenName() + " ");
         // Show soft keyboard automatically and request focus to field
         etComposeTweet.requestFocus();
         getDialog().getWindow().setSoftInputMode(
@@ -78,7 +78,7 @@ public class ReplyTweetFragment extends DialogFragment {
             public void onClick(View v) {
                 ReplyTweetDialogListener listener = (ReplyTweetDialogListener) getActivity();
                 String text = etComposeTweet.getText().toString();
-                listener.onFinishComposeTweet(text, tweet.getTweetId());
+                listener.onFinishComposeTweet(text, mTweet.getTweetId());
                 // Delete draft if exists
                 //saveDraft("");
                 Toast.makeText(getActivity().getApplicationContext(), "Tweet posted", Toast.LENGTH_SHORT);

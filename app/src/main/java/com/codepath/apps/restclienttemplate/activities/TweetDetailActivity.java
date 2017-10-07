@@ -32,48 +32,48 @@ import cz.msebera.android.httpclient.Header;
 
 public class TweetDetailActivity extends AppCompatActivity implements ReplyTweetFragment.ReplyTweetDialogListener {
 
-    ImageView ivProfileImage;
-    TextView tvUserName;
-    TextView tvBody;
-    TextView tvTime;
-    ImageView ivTweetMediaImage;
-    VideoView vvMediaVideo;
-    Button btnReply;
-    Tweet tweet;
-    private TwitterClient client;
-    private ActivityTweetDetailBinding binding;
+    private ImageView ivProfileImage;
+    private TextView tvUserName;
+    private TextView tvBody;
+    private TextView tvTime;
+    private ImageView ivTweetMediaImage;
+    private VideoView vvMediaVideo;
+    private Button btnReply;
+    private Tweet mTweet;
+    private TwitterClient mClient;
+    private ActivityTweetDetailBinding mBinding;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_tweet_detail);
-        client = TwitterApp.getRestClient();
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_tweet_detail);
+        mClient = TwitterApp.getRestClient();
 
-        ivProfileImage = binding.ivProfileImage; //(ImageView) findViewById(R.id.ivProfileImage);
-        tvUserName = binding.tvUserName; //(TextView) findViewById(R.id.tvUserName);
-        tvBody = binding.tvBody; //(TextView) findViewById(R.id.tvBody);
-        tvTime = binding.tvTime; //(TextView) findViewById(R.id.tvTime);
+        ivProfileImage = mBinding.ivProfileImage; //(ImageView) findViewById(R.id.ivProfileImage);
+        tvUserName = mBinding.tvUserName; //(TextView) findViewById(R.id.tvUserName);
+        tvBody = mBinding.tvBody; //(TextView) findViewById(R.id.tvBody);
+        tvTime = mBinding.tvTime; //(TextView) findViewById(R.id.tvTime);
 
-        tweet = Parcels.unwrap(getIntent().getParcelableExtra("tweet"));
+        mTweet = Parcels.unwrap(getIntent().getParcelableExtra("tweet"));
 
-        tvUserName.setText(tweet.getUser().getScreenName());
-        tvBody.setText(tweet.getBody());
-        tvTime.setText(TimeUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
-        Glide.with(getApplicationContext()).load(tweet.getUser().getProfileImageUrl()).into(ivProfileImage);
+        tvUserName.setText(mTweet.getUser().getScreenName());
+        tvBody.setText(mTweet.getBody());
+        tvTime.setText(TimeUtil.getRelativeTimeAgo(mTweet.getCreatedAt()));
+        Glide.with(getApplicationContext()).load(mTweet.getUser().getProfileImageUrl()).into(ivProfileImage);
 
-        ivTweetMediaImage = binding.ivMediaImage; //(ImageView) findViewById(R.id.ivMediaImage);
-        if (tweet.getMedia() != null) {
-            Glide.with(getApplicationContext()).load(tweet.getMedia().getMediaUrl()).into(ivTweetMediaImage);
+        ivTweetMediaImage = mBinding.ivMediaImage; //(ImageView) findViewById(R.id.ivMediaImage);
+        if (mTweet.getMedia() != null) {
+            Glide.with(getApplicationContext()).load(mTweet.getMedia().getMediaUrl()).into(ivTweetMediaImage);
         }
 
-        vvMediaVideo = binding.vvDetailVideo; // (VideoView) findViewById(R.id.vvDetailVideo);
+        vvMediaVideo = mBinding.vvDetailVideo; // (VideoView) findViewById(R.id.vvDetailVideo);
         MediaController mediaController = new MediaController(this);
         vvMediaVideo.setMediaController(mediaController);
 
-        if (tweet.getMedia() != null && tweet.getMedia().getMediaType().equals("video") && tweet.getMedia().getVideoUrl() != null) {
+        if (mTweet.getMedia() != null && mTweet.getMedia().getMediaType().equals("video") && mTweet.getMedia().getVideoUrl() != null) {
             vvMediaVideo.setVisibility(View.VISIBLE);
-            vvMediaVideo.setVideoPath(tweet.getMedia().getVideoUrl());
+            vvMediaVideo.setVideoPath(mTweet.getMedia().getVideoUrl());
             vvMediaVideo.requestFocus();
             vvMediaVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 // Close the progress bar and play the video
@@ -87,14 +87,14 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
             vvMediaVideo.setVisibility(View.GONE);
         }
 
-        btnReply = binding.btnReply; //(Button) findViewById(R.id.btnReply);
+        btnReply = mBinding.btnReply; //(Button) findViewById(R.id.btnReply);
     }
 
 
     public void onReplyTweet(View view) {
         // Bring up the modal to reply
         Bundle bundle = new Bundle();
-        bundle.putParcelable("tweet", Parcels.wrap(tweet));
+        bundle.putParcelable("mTweet", Parcels.wrap(mTweet));
         FragmentManager fm = getSupportFragmentManager();
         ReplyTweetFragment replyTweetDialogFragment = ReplyTweetFragment.newInstance(getResources().getString(R.string.tweet_dialog_title));
         replyTweetDialogFragment.setArguments(bundle);
@@ -108,7 +108,7 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
 
             @Override
             public void run() {
-                client.postTweet(tweetText, inReplyStatusId, new JsonHttpResponseHandler() {
+                mClient.postTweet(tweetText, inReplyStatusId, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d("DEBUG", "vvv: Reply post Successful");

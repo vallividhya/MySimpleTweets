@@ -22,17 +22,17 @@ import org.parceler.Parcel;
 public class Media extends BaseModel {
 
     @Column
-    String mediaUrl;
+    private String mediaUrl;
 
     @PrimaryKey
     @Column
-    long mediaId;
+    private long mediaId;
 
     @Column
-    String mediaType;
+    private String mediaType;
 
     @Column @Nullable
-    String videoUrl;
+    private String videoUrl;
 
     public Media() {
     }

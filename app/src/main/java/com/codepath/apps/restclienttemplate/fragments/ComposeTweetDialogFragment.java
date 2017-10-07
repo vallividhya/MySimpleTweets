@@ -35,7 +35,7 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
     private Button btnTweet;
     private ImageButton btnCloseDialog;
     private TextView tvCharCount;
-    SharedPreferences preferences;
+    private SharedPreferences preferences;
     TwitterClient client;
 
     public ComposeTweetDialogFragment() {
@@ -74,7 +74,7 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
         // Get field from view
         etComposeTweet = (EditText) view.findViewById(R.id.etNewTweet);
         // Fetch arguments from bundle and set title
-        String title = getArguments().getString("title", "Let's tweet");
+        String title = getArguments().getString("title", "Let's mTweet");
         getDialog().setTitle(title);
         // Show soft keyboard automatically and request focus to field
         etComposeTweet.requestFocus();
@@ -88,7 +88,7 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
             public void onClick(View v) {
                 ComposeTweetDialogListener listener = (ComposeTweetDialogListener) getActivity();
                 String text = etComposeTweet.getText().toString();
-                // Post tweet
+                // Post mTweet
                 postNewTweet(text);
                 listener.onFinishComposeTweet(text);
                 // Delete draft if exists

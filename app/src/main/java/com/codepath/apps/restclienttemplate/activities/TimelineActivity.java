@@ -31,34 +31,32 @@ import org.parceler.Parcels;
 
 public class TimelineActivity extends AppCompatActivity implements ComposeTweetDialogFragment.ComposeTweetDialogListener, TweetsListFragment.TweetSelectedListener {
 
-    private ActivityTimelineBinding binding;
-    static long sinceId = 1;
+    private static long sSinceId = 1;
+    private ActivityTimelineBinding mBinding;
     NetworkChangeReceiver networkChangeReceiver;
-    private ViewPager viewPager;
-    private SmartFragmentStatePagerAdapter adapterViewPager;
+    private ViewPager mViewPager;
+    private SmartFragmentStatePagerAdapter mAdapterViewPager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_timeline);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline);
 
         // Find the toolbar view inside the activity layout
-        Toolbar toolbar = binding.includedToolBar.toolbar;
+        Toolbar toolbar = mBinding.includedToolBar.toolbar;
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
 
-        adapterViewPager = new TweetsPagerAdapter(getSupportFragmentManager(), this);
-        viewPager = binding.viewpager;
-        viewPager.setAdapter(adapterViewPager);
+        mAdapterViewPager = new TweetsPagerAdapter(getSupportFragmentManager(), this);
+        mViewPager = mBinding.viewpager;
+        mViewPager.setAdapter(mAdapterViewPager);
 
-        PagerSlidingTabStrip tabStrip = binding.tabs;
+        PagerSlidingTabStrip tabStrip = mBinding.tabs;
         tabStrip.setShouldExpand(true);
-        tabStrip.setViewPager(viewPager);
+        tabStrip.setViewPager(mViewPager);
 
-        //TabLayout tabLayout = binding.slidingTabs;
-        //tabLayout.setupWithViewPager(viewPager);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -72,19 +70,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_timeline, menu);
-        // Tinting the menu icon to theme colors
-        //MenuItem item = menu.findItem(R.id.miLogOut);
-       // UIHelperUtil.tintMenuIcon(TimelineActivity.this, item, android.R.color.white);
         return true;
     }
-
-
-
-    private void loadNextDataFromApi(long page) {
-        //populateTimeLineFromAPICall(sinceId);
-    }
-
-
 
     public void populateTimeLineFromLocalDB() {
         // No Network connection
@@ -131,7 +118,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
             if (NetworkUtil.isNetworkAvailable(context)) {
                 // Network available now:
                 Log.d("DEBUG", "vvv: populating from internet");
-               // populateTimeLineFromAPICall(sinceId);
+               // populateTimeLineFromAPICall(sSinceId);
             } else {
                 // Network disconnected
                 Log.d("DEBUG", "vvv: populating from local DB");
@@ -144,7 +131,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     @Override
     public void onFinishComposeTweet(String tweetText) {
        // Get the fragment from the smartFragmentStatePagerAdapter
-        HomeTimeLineFragment fragment = (HomeTimeLineFragment) adapterViewPager.getRegisteredFragment(0);
+        HomeTimeLineFragment fragment = (HomeTimeLineFragment) mAdapterViewPager.getRegisteredFragment(0);
         // Call the method in the HomeTimeline fragment to insert to the timeline locally
         fragment.insertTweetOnTimeLine(fragment.getUser(), tweetText);
     }

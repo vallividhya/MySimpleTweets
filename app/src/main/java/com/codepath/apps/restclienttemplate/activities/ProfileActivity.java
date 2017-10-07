@@ -32,18 +32,18 @@ import cz.msebera.android.httpclient.Header;
 
 public class ProfileActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener {
 
-    private TwitterClient client;
-    private ActivityProfileBinding binding;
+    private TwitterClient mClient;
+    private ActivityProfileBinding mBinding;
     Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Set content from the binding
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_profile);
+        // Set content from the mBinding
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_profile);
 
         // Find the toolbar view inside the activity layout
-        toolbar = binding.includedToolBar.toolbar;
+        toolbar = mBinding.includedToolBar.toolbar;
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(toolbar);
@@ -57,10 +57,10 @@ public class ProfileActivity extends AppCompatActivity implements TweetsListFrag
         ft.replace(R.id.flContainer, userTimelineFragment);
         ft.commit();
 
-        client = TwitterApp.getRestClient();
+        mClient = TwitterApp.getRestClient();
 
         if (screenName == null) {
-            client.getAccountOwnerInfo(new JsonHttpResponseHandler() {
+            mClient.getAccountOwnerInfo(new JsonHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -68,7 +68,7 @@ public class ProfileActivity extends AppCompatActivity implements TweetsListFrag
                 }
             });
         } else {
-            client.getUserInfo(screenName, new JsonHttpResponseHandler() {
+            mClient.getUserInfo(screenName, new JsonHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -92,11 +92,11 @@ public class ProfileActivity extends AppCompatActivity implements TweetsListFrag
     }
 
     private void populateUserHeadline(User user) {
-        TextView tvName = binding.tvName;
-        TextView tvTagline = binding.tvTagLine;
-        TextView tvFollowers = binding.tvFollowers;
-        TextView tvFollowing = binding.tvFollowing;
-        ImageView ivProfileImage = binding.ivProfileImage;
+        TextView tvName = mBinding.tvName;
+        TextView tvTagline = mBinding.tvTagLine;
+        TextView tvFollowers = mBinding.tvFollowers;
+        TextView tvFollowing = mBinding.tvFollowing;
+        ImageView ivProfileImage = mBinding.ivProfileImage;
 
         tvName.setText(user.getName());
         Glide.with(this).load(user.getProfileImageUrl()).into(ivProfileImage);
