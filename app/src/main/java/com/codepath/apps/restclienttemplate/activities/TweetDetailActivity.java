@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -50,10 +51,18 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_tweet_detail);
         mClient = TwitterApp.getRestClient();
 
-        ivProfileImage = mBinding.ivProfileImage; //(ImageView) findViewById(R.id.ivProfileImage);
-        tvUserName = mBinding.tvUserName; //(TextView) findViewById(R.id.tvUserName);
-        tvBody = mBinding.tvBody; //(TextView) findViewById(R.id.tvBody);
-        tvTime = mBinding.tvTime; //(TextView) findViewById(R.id.tvTime);
+
+        Toolbar toolbar = mBinding.includedToolBar.toolbar;
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            toolbar.setTitle("Tweet");
+        }
+        ivProfileImage = mBinding.ivProfileImage;
+        tvUserName = mBinding.tvUserName;
+        tvBody = mBinding.tvBody;
+        tvTime = mBinding.tvTime;
 
         mTweet = Parcels.unwrap(getIntent().getParcelableExtra("tweet"));
 

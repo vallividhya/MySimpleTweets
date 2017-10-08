@@ -2,8 +2,11 @@ package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.activities.ProfileActivity;
 import com.codepath.apps.restclienttemplate.models.Tweet;
@@ -29,7 +33,7 @@ import java.util.List;
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> {
 
     private ArrayList<Tweet> mTweetsList;
-    private Context mContext;
+    private Context context;
     private TweetAdapterOnItemClickListener onItemClickListener;
 
     public interface TweetAdapterOnItemClickListener {
@@ -44,8 +48,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     // Create a new TweetInDB row and cache references into View Holder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        mContext = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
 
         View tweetView =  inflater.inflate(R.layout.item_tweet, parent, false);
         ViewHolder viewHolder = new ViewHolder(tweetView);
@@ -63,7 +67,16 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvBody.setText(tweet.getBody());
         holder.tvTime.setText(TimeUtil.getRelativeTimeAgo(tweet.getCreatedAt()));
         holder.ivProfileImage.setTag(R.id.ivProfileImage, tweet.getUser().getScreenName());
-        Glide.with(mContext).load(tweet.getUser().getProfileImageUrl()).into(holder.ivProfileImage);
+        // Rounded corners images
+        Glide.with(context).load(tweet.getUser().getProfileImageUrl()).asBitmap().centerCrop().into(new BitmapImageViewTarget(holder.ivProfileImage) {
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable circularBitmapDrawable =
+                        RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+                circularBitmapDrawable.setCircular(true);
+                holder.ivProfileImage.setImageDrawable(circularBitmapDrawable);
+            }
+        });
 
         if (tweet.getMedia() != null && tweet.getMedia().getMediaType().equals("video") && tweet.getMedia().getVideoUrl() != null) {
             try {
@@ -123,17 +136,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     String screenName = (String) v.getTag(R.id.ivProfileImage);
-                    Intent intent = new Intent(mContext, ProfileActivity.class);
+                    Intent intent = new Intent(context, ProfileActivity.class);
                     intent.putExtra("screen_name", screenName);
-                    mContext.startActivity(intent);
+                    context.startActivity(intent);
                 }
             });
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
-            Typeface userNameFont = Typeface.createFromAsset(mContext.getAssets(), "fonts/HelveticaNeue-Bold.ttf");
+            Typeface userNameFont = Typeface.createFromAsset(context.getAssets(), "fonts/HelveticaNeue-Bold.ttf");
             tvUserName.setTypeface(userNameFont);
 
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
-            Typeface bodyFont = Typeface.createFromAsset(mContext.getAssets(), "fonts/HelveticaNeue-Regular.ttf");
+            Typeface bodyFont = Typeface.createFromAsset(context.getAssets(), "fonts/HelveticaNeue-Regular.ttf");
             tvBody.setTypeface(bodyFont);
 
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);

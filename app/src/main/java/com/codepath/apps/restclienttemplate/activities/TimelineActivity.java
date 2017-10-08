@@ -33,7 +33,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
 
     private static long sSinceId = 1;
     private ActivityTimelineBinding mBinding;
-    NetworkChangeReceiver networkChangeReceiver;
+    BroadcastReceiver networkChangeReceiver;
     private ViewPager mViewPager;
     private SmartFragmentStatePagerAdapter mAdapterViewPager;
 
@@ -47,8 +47,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         Toolbar toolbar = mBinding.includedToolBar.toolbar;
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
-        setSupportActionBar(toolbar);
-
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
         mAdapterViewPager = new TweetsPagerAdapter(getSupportFragmentManager(), this);
         mViewPager = mBinding.viewpager;
         mViewPager.setAdapter(mAdapterViewPager);
@@ -56,12 +57,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         PagerSlidingTabStrip tabStrip = mBinding.tabs;
         tabStrip.setShouldExpand(true);
         tabStrip.setViewPager(mViewPager);
-
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        networkChangeReceiver = new NetworkChangeReceiver();
-        registerReceiver(networkChangeReceiver, intentFilter);
+        //setUpReceiver();
     }
 
 
@@ -111,22 +107,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         startActivity(intent);
     }
 
-    public class NetworkChangeReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (NetworkUtil.isNetworkAvailable(context)) {
-                // Network available now:
-                Log.d("DEBUG", "vvv: populating from internet");
-               // populateTimeLineFromAPICall(sSinceId);
-            } else {
-                // Network disconnected
-                Log.d("DEBUG", "vvv: populating from local DB");
-                populateTimeLineFromLocalDB();
-            }
-        }
-    }
-
     // Implementation for interface ComposeTweetDialogFragment.ComposeTweetDialogListener's onFinishComposeTweet() method
     @Override
     public void onFinishComposeTweet(String tweetText) {
@@ -137,9 +117,32 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
     }
 
 
-//    @Override
-//    protected void onDestroy() {
-//        unregisterReceiver(networkChangeReceiver);
-//        super.onDestroy();
-//    }
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(networkChangeReceiver);
+        super.onDestroy();
+    }
+
+    private void setUpReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+
+        networkChangeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (NetworkUtil.isNetworkAvailable(context)) {
+                    // Network available now:
+                    Log.d("DEBUG", "vvv: populating from internet");
+                    TweetsListFragment fragment = (TweetsListFragment) mAdapterViewPager.getRegisteredFragment(mViewPager.getCurrentItem());
+                   // fragment.loadMore(1);
+                } else {
+                    // Network disconnected
+                    Log.d("DEBUG", "vvv: populating from local DB");
+                    TweetsListFragment fragment = (TweetsListFragment) mAdapterViewPager.getRegisteredFragment(mViewPager.getCurrentItem());
+                    fragment.populateTimeLineFromLocalDB();
+                }
+            }
+        };
+        registerReceiver(networkChangeReceiver, intentFilter);
+    }
 }

@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -19,6 +23,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class UserTimelineFragment extends TweetsListFragment {
     private TwitterClient mClient;
+    private static long sMaxId = 1;
 
     public static UserTimelineFragment newInstance(String screenName) {
         UserTimelineFragment userTimelineFragment = new UserTimelineFragment();
@@ -50,7 +55,8 @@ public class UserTimelineFragment extends TweetsListFragment {
                 mClient.getUserTimeLine(since_id, screenName, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                        addItems(response);
+                        ArrayList<Tweet> list = getTweetsFromJSONResponse(response);
+                        addItems(list);
                         //rotateloading.stop();
                         Log.d("DEBUG", response.toString());
                     }
@@ -70,13 +76,31 @@ public class UserTimelineFragment extends TweetsListFragment {
             }
         };
 
-        // rotateloading.start();
+         //rotateloading.start();
         // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
         handler.postDelayed(runnable, 500);
     }
 
     @Override
-    void loadMore(long sinceId) {
-        populateUserTimeLineFromAPICall(sinceId);
+    void loadMore() {
+        populateUserTimeLineFromAPICall(sMaxId);
+    }
+
+    private ArrayList<Tweet> getTweetsFromJSONResponse(JSONArray response) {
+        ArrayList<Tweet> list = new ArrayList<>(response.length());
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
+                Log.d("DEBUG", " since id = " + tweet.getTweetId());
+                list.add(tweet);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if (!list.isEmpty()) {
+            sMaxId = list.get(list.size() - 1).getTweetId();
+        }
+        return list;
     }
 }

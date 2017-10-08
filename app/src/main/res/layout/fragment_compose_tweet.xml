@@ -6,14 +6,15 @@
     android:layout_margin="5dp"
     tools:context="com.codepath.apps.restclienttemplate.fragments.ComposeTweetDialogFragment">
 
-    <EditText
-        android:id="@+id/etNewTweet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/composeTweetHint"
-        android:inputType="textMultiLine"
-        android:minHeight="100dp"
-        android:layout_below="@+id/btn_close_dialog"/>
+
+        <EditText
+            android:id="@+id/etNewTweet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/composeTweetHint"
+            android:inputType="textMultiLine"
+            android:minHeight="100dp"
+            android:layout_below="@+id/btn_close_dialog"/>
 
 
     <Button
