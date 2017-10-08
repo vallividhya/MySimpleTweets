@@ -45,6 +45,11 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         public void onProfileSelected(String screenName);
     }
 
+    public interface ReplyClickedListener {
+        public void onReplyTweetClicked(Tweet tweet);
+    }
+
+
     public TweetsListFragment() {
         // Required empty public constructor
     }
@@ -151,5 +156,11 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         ((ProfileSelectedListener) getActivity()).onProfileSelected(screenName);
     }
 
-    abstract void loadMore();
+    @Override
+    public void onReplyClick(View itemView, int position) {
+        Tweet tweet = mTweetsList.get(position);
+        ((ReplyClickedListener) getActivity()).onReplyTweetClicked(tweet);
+    }
+
+    public abstract void loadMore();
 }

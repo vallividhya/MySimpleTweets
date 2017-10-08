@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.restclienttemplate.R;
@@ -23,13 +24,14 @@ import com.codepath.apps.restclienttemplate.adapters.TweetsPagerAdapter;
 import com.codepath.apps.restclienttemplate.databinding.ActivityTimelineBinding;
 import com.codepath.apps.restclienttemplate.fragments.ComposeTweetDialogFragment;
 import com.codepath.apps.restclienttemplate.fragments.HomeTimeLineFragment;
+import com.codepath.apps.restclienttemplate.fragments.ReplyTweetFragment;
 import com.codepath.apps.restclienttemplate.fragments.TweetsListFragment;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 
 import org.parceler.Parcels;
 
-public class TimelineActivity extends AppCompatActivity implements ComposeTweetDialogFragment.ComposeTweetDialogListener, TweetsListFragment.TweetSelectedListener, TweetsListFragment.ProfileSelectedListener {
+public class TimelineActivity extends AppCompatActivity implements ComposeTweetDialogFragment.ComposeTweetDialogListener, TweetsListFragment.TweetSelectedListener, TweetsListFragment.ProfileSelectedListener, TweetsListFragment.ReplyClickedListener,  ReplyTweetFragment.ReplyTweetDialogListener{
 
     private static long sSinceId = 1;
     private ActivityTimelineBinding mBinding;
@@ -67,6 +69,29 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_timeline, menu);
         return true;
+    }
+
+    private void setUpReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+
+        networkChangeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (NetworkUtil.isNetworkAvailable(context)) {
+                    // Network available now:
+                    Log.d("DEBUG", "vvv: populating from internet");
+                    TweetsListFragment fragment = (TweetsListFragment) mAdapterViewPager.getRegisteredFragment(mViewPager.getCurrentItem());
+                    fragment.loadMore();
+                } else {
+                    // Network disconnected
+                    Log.d("DEBUG", "vvv: populating from local DB");
+                    TweetsListFragment fragment = (TweetsListFragment) mAdapterViewPager.getRegisteredFragment(mViewPager.getCurrentItem());
+                    fragment.populateTimeLineFromLocalDB();
+                }
+            }
+        };
+        registerReceiver(networkChangeReceiver, intentFilter);
     }
 
     public void populateTimeLineFromLocalDB() {
@@ -123,29 +148,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         super.onDestroy();
     }
 
-    private void setUpReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-
-        networkChangeReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (NetworkUtil.isNetworkAvailable(context)) {
-                    // Network available now:
-                    Log.d("DEBUG", "vvv: populating from internet");
-                    TweetsListFragment fragment = (TweetsListFragment) mAdapterViewPager.getRegisteredFragment(mViewPager.getCurrentItem());
-                   // fragment.loadMore(1);
-                } else {
-                    // Network disconnected
-                    Log.d("DEBUG", "vvv: populating from local DB");
-                    TweetsListFragment fragment = (TweetsListFragment) mAdapterViewPager.getRegisteredFragment(mViewPager.getCurrentItem());
-                    fragment.populateTimeLineFromLocalDB();
-                }
-            }
-        };
-        registerReceiver(networkChangeReceiver, intentFilter);
-    }
-
     @Override
     public void onProfileSelected(String screenName) {
         Intent intent = new Intent(this, ProfileActivity.class);
@@ -153,4 +155,20 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         intent.putExtra("screen_name", screenName);
         startActivity(intent);
     }
+
+    @Override
+    public void onReplyTweetClicked(Tweet tweet) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("tweet", Parcels.wrap(tweet));
+        FragmentManager fm = getSupportFragmentManager();
+        ReplyTweetFragment replyTweetDialogFragment = ReplyTweetFragment.newInstance(getResources().getString(R.string.tweet_dialog_title));
+        replyTweetDialogFragment.setArguments(bundle);
+        replyTweetDialogFragment.show(fm, "fragment_reply_tweet");
+    }
+
+    @Override
+    public void onFinishComposeTweet() {
+        Toast.makeText(this, "Tweet posted", Toast.LENGTH_SHORT).show();
+    }
+
 }

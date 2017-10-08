@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -36,7 +37,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
     public interface TweetAdapterOnItemClickListener {
         void onItemClick(View itemView, int position);
+
         void onProfileImageClick(String screenName);
+
+        void onReplyClick(View itemView, int position);
+    }
+
+    public interface OnTweetReplyClickListener {
+        void onTweetReplyClick (View itemView, int position);
     }
 
     public TweetAdapter(ArrayList<Tweet> tweetsList, TweetAdapterOnItemClickListener listener) {
@@ -50,7 +58,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View tweetView =  inflater.inflate(R.layout.item_tweet, parent, false);
+        View tweetView = inflater.inflate(R.layout.item_tweet, parent, false);
         ViewHolder viewHolder = new ViewHolder(tweetView);
         return viewHolder;
     }
@@ -110,16 +118,13 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void addAll(List<Tweet>list) {
+    public void addAll(List<Tweet> list) {
         mTweetsList.addAll(list);
         notifyDataSetChanged();
     }
 
-//    public void setOnItemClickListener(TweetAdapterOnItemClickListener onItemClickListener) {
-//        this.onItemClickListener = onItemClickListener;
-//    }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView ivProfileImage;
         public TextView tvUserName;
@@ -127,6 +132,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         public TextView tvBody;
         public TextView tvTime;
         public VideoView vvMediaVideo;
+        public ImageButton iBtnReply;
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -136,11 +142,9 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                 public void onClick(View v) {
                     String screenName = (String) v.getTag(R.id.ivProfileImage);
                     onItemClickListener.onProfileImageClick(screenName);
-//                    Intent intent = new Intent(context, ProfileActivity.class);
-//                    intent.putExtra("screen_name", screenName);
-//                    context.startActivity(intent);
                 }
             });
+
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             Typeface userNameFont = Typeface.createFromAsset(context.getAssets(), "fonts/HelveticaNeue-Bold.ttf");
             tvUserName.setTypeface(userNameFont);
@@ -157,7 +161,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
                 @Override
                 public void onClick(View v) {
-                    if(onItemClickListener != null) {
+                    if (onItemClickListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             onItemClickListener.onItemClick(itemView, position);
@@ -167,6 +171,19 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             });
 
             vvMediaVideo = (VideoView) itemView.findViewById(R.id.vvMediaVideo);
+
+            iBtnReply = (ImageButton) itemView.findViewById(R.id.iBtnReply);
+            iBtnReply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        int pos = getAdapterPosition();
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onItemClickListener.onReplyClick(itemView, pos);
+                        }
+                    }
+                }
+            });
         }
 
     }

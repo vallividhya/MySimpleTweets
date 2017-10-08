@@ -3,10 +3,12 @@ package com.codepath.apps.restclienttemplate.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +21,14 @@ import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
+import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONObject;
 import org.parceler.Parcels;
+
+import cz.msebera.android.httpclient.Header;
 
 public class ReplyTweetFragment extends DialogFragment {
     private EditText etComposeTweet;
@@ -28,14 +36,16 @@ public class ReplyTweetFragment extends DialogFragment {
     private ImageButton btnCloseDialog;
     private TextView tvCharCount;
     private SharedPreferences mPreferences;
-    Tweet mTweet;
+    private TwitterClient mClient;
+    private Tweet mTweet;
+    private ReplyTweetDialogListener listener;
 
     public ReplyTweetFragment() {
         // Required empty public constructor
     }
 
     public interface ReplyTweetDialogListener {
-        void onFinishComposeTweet(String tweetText, long replyId);
+        void onFinishComposeTweet();
     }
 
     public static ReplyTweetFragment newInstance(String title) {
@@ -47,11 +57,28 @@ public class ReplyTweetFragment extends DialogFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mClient = TwitterApp.getRestClient();
+        mPreferences = getContext().getSharedPreferences("Drafts", Context.MODE_PRIVATE);
+        mTweet = Parcels.unwrap(getArguments().getParcelable("tweet"));
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ReplyTweetDialogListener) {
+            listener = (ReplyTweetDialogListener) context;
+        } else {
+            throw new ClassCastException(context.toString() + "must implement ReplyTweetFragment.ReplyTweetDialogListener");
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mPreferences = getActivity().getSharedPreferences("Drafts", Context.MODE_PRIVATE);
-        mTweet = Parcels.unwrap(getArguments().getParcelable("mTweet"));
+
         return inflater.inflate(R.layout.fragment_reply_tweet, container);
     }
 
@@ -76,12 +103,10 @@ public class ReplyTweetFragment extends DialogFragment {
         btnTweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ReplyTweetDialogListener listener = (ReplyTweetDialogListener) getActivity();
                 String text = etComposeTweet.getText().toString();
-                listener.onFinishComposeTweet(text, mTweet.getTweetId());
+                postReplyToTweet(text, mTweet.getTweetId());
                 // Delete draft if exists
                 //saveDraft("");
-                Toast.makeText(getActivity().getApplicationContext(), "Tweet posted", Toast.LENGTH_SHORT);
                 dismiss();
             }
         });
@@ -118,5 +143,33 @@ public class ReplyTweetFragment extends DialogFragment {
 
             }
         });
+    }
+
+    private void postReplyToTweet(final String tweetText, final long inReplyStatusId) {
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+
+            @Override
+            public void run() {
+                mClient.postTweet(tweetText, inReplyStatusId, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Log.d("DEBUG", "vvv: Reply post Successful");
+                        //ReplyTweetDialogListener listener = (ReplyTweetDialogListener) getActivity();
+                        listener.onFinishComposeTweet();
+                        // Delete draft if exists
+                        //saveDraft("");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Log.d("DEBUG", "post failed " + errorResponse.toString());
+                        Toast.makeText(getContext(), "Failed to post", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        };
+        // This API does not have a rate-limit. So, can just be posted.
+        handler.post(runnable);
     }
 }

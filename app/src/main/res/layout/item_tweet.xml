@@ -63,4 +63,13 @@
         android:layout_below="@id/tvBody"
         android:layout_centerHorizontal="true" />
 
+    <ImageButton
+        android:id="@+id/iBtnReply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/vvMediaVideo"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_reply_black_12dp"/>
+
 </RelativeLayout>

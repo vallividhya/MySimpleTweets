@@ -134,7 +134,7 @@ public class HomeTimeLineFragment extends TweetsListFragment {
     }
 
     @Override
-    void loadMore() {
+    public void loadMore() {
         populateTimeLineFromAPICall(sMaxId);
     }
 

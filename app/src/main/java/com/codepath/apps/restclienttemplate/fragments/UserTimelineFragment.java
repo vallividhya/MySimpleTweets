@@ -82,7 +82,7 @@ public class UserTimelineFragment extends TweetsListFragment {
     }
 
     @Override
-    void loadMore() {
+    public void loadMore() {
         populateUserTimeLineFromAPICall(sMaxId);
     }
 
