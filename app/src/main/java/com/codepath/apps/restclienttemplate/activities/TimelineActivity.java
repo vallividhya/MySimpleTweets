@@ -59,7 +59,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         PagerSlidingTabStrip tabStrip = mBinding.tabs;
         tabStrip.setShouldExpand(true);
         tabStrip.setViewPager(mViewPager);
-        //setUpReceiver();
+        setUpReceiver();
     }
 
 
@@ -92,15 +92,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
             }
         };
         registerReceiver(networkChangeReceiver, intentFilter);
-    }
-
-    public void populateTimeLineFromLocalDB() {
-        // No Network connection
-//        snackbar = Snackbar.make(findViewById(R.id.cLayout), R.string.snackbar_text, Snackbar.LENGTH_LONG);
-//        snackbar.show();
-        // Read from DB
-       // tweetsList.addAll((ArrayList<Tweet>) SQLite.select().from(Tweet.class).queryList());
-       // adapter.notifyDataSetChanged();
     }
 
     // Click handler for FAB

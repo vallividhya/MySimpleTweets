@@ -90,7 +90,8 @@ public class MentionsTimelineFragment extends TweetsListFragment {
                         try {
                             mAccountOwner[0] = AccountOwner.fromJSON(response);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
+                            Log.e("ERROR", "JSON Exception");
                         }
                     }
 
@@ -105,7 +106,8 @@ public class MentionsTimelineFragment extends TweetsListFragment {
                             Log.d("DEBUG",  "v1:"+ errorResponse.getJSONObject(0).toString());
                             Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
+                            Log.e("ERROR", "JSON Exception");
                         }
                     }
 
@@ -134,7 +136,7 @@ public class MentionsTimelineFragment extends TweetsListFragment {
                 list.add(tweet);
 
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("ERROR", "JSON Exception");
             }
         }
         if (!list.isEmpty()) {

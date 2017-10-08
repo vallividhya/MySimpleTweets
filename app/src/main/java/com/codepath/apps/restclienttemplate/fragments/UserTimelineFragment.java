@@ -41,9 +41,6 @@ public class UserTimelineFragment extends TweetsListFragment {
     }
 
     private void populateUserTimeLineFromAPICall(final long since_id) {
-//        if (snackbar != null && snackbar.isShown()) {
-//            snackbar.dismiss();
-//        }
 
         // Came from the activity
         final String screenName = getArguments().getString("screen_name");
@@ -57,20 +54,19 @@ public class UserTimelineFragment extends TweetsListFragment {
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         ArrayList<Tweet> list = getTweetsFromJSONResponse(response);
                         addItems(list);
-                        //rotateloading.stop();
                         Log.d("DEBUG", response.toString());
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                        Log.d("ERROR", errorResponse.toString());
+                        Log.e("ERROR", errorResponse.toString());
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                         // Error could be 423. In such a case, display from local DB.
-                        //populateTimeLineFromLocalDB();
-                        //Log.d("ERROR", errorResponse.toString());
+                        populateTimeLineFromLocalDB();
+                        Log.e("ERROR", errorResponse.toString());
                     }
                 });
             }
@@ -95,7 +91,7 @@ public class UserTimelineFragment extends TweetsListFragment {
                 list.add(tweet);
 
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("ERROR", "JSON Exception: " + e.getMessage());
             }
         }
         if (!list.isEmpty()) {

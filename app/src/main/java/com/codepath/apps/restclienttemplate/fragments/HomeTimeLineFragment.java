@@ -66,20 +66,20 @@ public class HomeTimeLineFragment extends TweetsListFragment {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
                         Log.d("ERROR", errorResponse.toString());
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                         // Error could be 423. In such a case, display from local DB.
-                        //populateTimeLineFromLocalDB();
-                        //Log.d("ERROR", errorResponse.toString());
+                        populateTimeLineFromLocalDB();
+                        Log.d("ERROR", errorResponse.toString());
                     }
                 });
             }
         };
 
-        //rotateloading.start();
         // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
         handler.postDelayed(runnable, 300);
     }
@@ -99,7 +99,8 @@ public class HomeTimeLineFragment extends TweetsListFragment {
                         try {
                             mAccountOwner[0] = AccountOwner.fromJSON(response);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
+                            Log.e("DEBUG",  "JSON Exception");
                         }
                     }
 
@@ -111,10 +112,10 @@ public class HomeTimeLineFragment extends TweetsListFragment {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                         try {
-                            Log.d("DEBUG",  "v1:"+ errorResponse.getJSONObject(0).toString());
+                            Log.e("DEBUG",  "v1:"+ errorResponse.getJSONObject(0).toString());
                             Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.e("DEBUG",  "JSON Exception");
                         }
                     }
 

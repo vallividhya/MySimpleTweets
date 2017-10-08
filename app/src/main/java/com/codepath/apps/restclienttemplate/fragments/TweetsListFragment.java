@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.adapters.TweetAdapter;
 import com.codepath.apps.restclienttemplate.databinding.FragmentTweetsListBinding;
 import com.codepath.apps.restclienttemplate.listeners.EndlessRecyclerViewScrollListener;
@@ -74,10 +75,14 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
                 // Clear items in the adapter so that the API will load new items.
                 adapter.clear();
                 if (NetworkUtil.isNetworkAvailable(getContext())) {
+                    if (snackbar != null && snackbar.isShown()) {
+                        snackbar.dismiss();
+                    }
                     rotateloading.start();
                     loadMore();
                     rotateloading.stop();
                 } else {
+                    snackbar.show();
                     populateTimeLineFromLocalDB();
                 }
                 swipeContainer.setRefreshing(false);
@@ -109,6 +114,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
             }
         };
         rvTweets.addOnScrollListener(mScrollListener);
+        snackbar = Snackbar.make(mBinding.cLayout, R.string.snackbar_text, Snackbar.LENGTH_LONG);
     }
 
     public void addItems(ArrayList<Tweet> tweetsList) {
@@ -142,8 +148,6 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
 
     public void populateTimeLineFromLocalDB() {
         // No Network connection
-//        snackbar = Snackbar.make(mBinding., R.string.snackbar_text, Snackbar.LENGTH_LONG);
-//        snackbar.show();
         // Read from DB
        addItemsFromDatabase();
     }
