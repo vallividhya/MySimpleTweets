@@ -34,7 +34,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     private SwipeRefreshLayout swipeContainer;
     private Snackbar snackbar;
     private LinearLayoutManager layoutManager;
-    //protected com.victor.loading.rotate.RotateLoading rotateloading;
+    protected com.victor.loading.rotate.RotateLoading rotateloading;
 
     public interface TweetSelectedListener {
         // Handle Tweet selection
@@ -66,7 +66,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     }
 
     private void setupViews() {
-        //rotateloading = mBinding.rotateloading; //(com.victor.loading.rotate.RotateLoading) findViewById(R.id.rotateloading);
+        rotateloading = mBinding.rotateloading; //(com.victor.loading.rotate.RotateLoading) findViewById(R.id.rotateloading);
         swipeContainer = mBinding.swipeContainer; //(SwipeRefreshLayout) findViewById(swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -74,7 +74,9 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
                 // Clear items in the adapter so that the API will load new items.
                 adapter.clear();
                 if (NetworkUtil.isNetworkAvailable(getContext())) {
+                    rotateloading.start();
                     loadMore();
+                    rotateloading.stop();
                 } else {
                     populateTimeLineFromLocalDB();
                 }
@@ -101,7 +103,9 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         mScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(long page, int totalItemsCount, RecyclerView view) {
+                rotateloading.start();
                 loadMore();
+                rotateloading.stop();
             }
         };
         rvTweets.addOnScrollListener(mScrollListener);
