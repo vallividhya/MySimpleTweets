@@ -30,7 +30,7 @@ import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ProfileActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener {
+public class ProfileActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener, TweetsListFragment.ProfileSelectedListener {
 
     private TwitterClient mClient;
     private ActivityProfileBinding mBinding;
@@ -123,5 +123,10 @@ public class ProfileActivity extends AppCompatActivity implements TweetsListFrag
         Intent intent = new Intent(this, TweetDetailActivity.class);
         intent.putExtra("tweet", Parcels.wrap(tweet));
         startActivity(intent);
+    }
+
+    @Override
+    public void onProfileSelected(String screenName) {
+        // Do nothing. Already in profile activity;
     }
 }

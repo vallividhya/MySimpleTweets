@@ -37,8 +37,12 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     //protected com.victor.loading.rotate.RotateLoading rotateloading;
 
     public interface TweetSelectedListener {
-        // Handle mTweet selection
+        // Handle Tweet selection
         public void onTweetSelected(Tweet tweet);
+    }
+
+    public interface ProfileSelectedListener {
+        public void onProfileSelected(String screenName);
     }
 
     public TweetsListFragment() {
@@ -139,7 +143,12 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     public void onItemClick(View itemView, int position) {
         Tweet tweet = mTweetsList.get(position);
         ((TweetSelectedListener) getActivity()).onTweetSelected(tweet);
-//
+    }
+
+    // Might get called when profile image is clicked in the adapter. Pass this upto the activity
+    @Override
+    public void onProfileImageClick(String screenName) {
+        ((ProfileSelectedListener) getActivity()).onProfileSelected(screenName);
     }
 
     abstract void loadMore();

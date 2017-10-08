@@ -29,7 +29,7 @@ import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 
 import org.parceler.Parcels;
 
-public class TimelineActivity extends AppCompatActivity implements ComposeTweetDialogFragment.ComposeTweetDialogListener, TweetsListFragment.TweetSelectedListener {
+public class TimelineActivity extends AppCompatActivity implements ComposeTweetDialogFragment.ComposeTweetDialogListener, TweetsListFragment.TweetSelectedListener, TweetsListFragment.ProfileSelectedListener {
 
     private static long sSinceId = 1;
     private ActivityTimelineBinding mBinding;
@@ -144,5 +144,13 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
             }
         };
         registerReceiver(networkChangeReceiver, intentFilter);
+    }
+
+    @Override
+    public void onProfileSelected(String screenName) {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("screen_name", screenName);
+        startActivity(intent);
     }
 }

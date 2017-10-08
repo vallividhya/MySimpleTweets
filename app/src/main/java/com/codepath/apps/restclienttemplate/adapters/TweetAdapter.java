@@ -1,7 +1,6 @@
 package com.codepath.apps.restclienttemplate.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
@@ -19,7 +18,6 @@ import android.widget.VideoView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.codepath.apps.restclienttemplate.R;
-import com.codepath.apps.restclienttemplate.activities.ProfileActivity;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.util.TimeUtil;
 
@@ -38,6 +36,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
     public interface TweetAdapterOnItemClickListener {
         void onItemClick(View itemView, int position);
+        void onProfileImageClick(String screenName);
     }
 
     public TweetAdapter(ArrayList<Tweet> tweetsList, TweetAdapterOnItemClickListener listener) {
@@ -136,9 +135,10 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     String screenName = (String) v.getTag(R.id.ivProfileImage);
-                    Intent intent = new Intent(context, ProfileActivity.class);
-                    intent.putExtra("screen_name", screenName);
-                    context.startActivity(intent);
+                    onItemClickListener.onProfileImageClick(screenName);
+//                    Intent intent = new Intent(context, ProfileActivity.class);
+//                    intent.putExtra("screen_name", screenName);
+//                    context.startActivity(intent);
                 }
             });
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
