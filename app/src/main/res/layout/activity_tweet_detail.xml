@@ -70,16 +70,42 @@
             android:layout_below="@id/tvBody"
             android:layout_centerHorizontal="true" />
 
-        <Button
-            android:id="@+id/btnReply"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/replyBtnText"
+            android:orientation="horizontal"
+            android:id="@+id/btnBar"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:textColor="@color/colorWhite"
-            android:onClick="onReplyTweet"
-            android:backgroundTint="@color/colorPrimary"/>
+            android:layout_marginBottom="30dp"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/btnReply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/replyBtnText"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:tint="@color/colorDarkGrey"
+                android:onClick="onReplyTweet"
+                app:srcCompat="@drawable/ic_reply_24px"
+                android:backgroundTint="@color/colorBackground"/>
+
+            <ImageView
+                android:id="@+id/btnReTweet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/retweetBtnText"
+                app:srcCompat="@drawable/ic_retweet_24px"
+                android:tint="@color/colorDarkGrey"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/colorWhite"
+                android:onClick="onReTweet"
+                android:backgroundTint="@color/colorBackground"/>
+        </LinearLayout>
+
+
 
     </RelativeLayout>
 

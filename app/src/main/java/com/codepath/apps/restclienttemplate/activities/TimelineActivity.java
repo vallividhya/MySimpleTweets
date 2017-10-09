@@ -31,11 +31,21 @@ import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 
 import org.parceler.Parcels;
 
-public class TimelineActivity extends AppCompatActivity implements ComposeTweetDialogFragment.ComposeTweetDialogListener, TweetsListFragment.TweetSelectedListener, TweetsListFragment.ProfileSelectedListener, TweetsListFragment.ReplyClickedListener,  ReplyTweetFragment.ReplyTweetDialogListener{
+/**
+ * Activity for timeline
+ *
+ * @author Valli Vidhya Venkatesan
+ */
+public class TimelineActivity extends AppCompatActivity
+        implements ComposeTweetDialogFragment.ComposeTweetDialogListener,
+        TweetsListFragment.TweetSelectedListener,
+        TweetsListFragment.ProfileSelectedListener,
+        TweetsListFragment.ReplyClickedListener,
+        ReplyTweetFragment.ReplyTweetDialogListener {
 
     private static long sSinceId = 1;
-    private ActivityTimelineBinding mBinding;
     BroadcastReceiver networkChangeReceiver;
+    private ActivityTimelineBinding mBinding;
     private ViewPager mViewPager;
     private SmartFragmentStatePagerAdapter mAdapterViewPager;
 
@@ -62,8 +72,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         setUpReceiver();
     }
 
-
-    // Menu icons are inflated just as they were with actionbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -80,12 +88,12 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
             public void onReceive(Context context, Intent intent) {
                 if (NetworkUtil.isNetworkAvailable(context)) {
                     // Network available now:
-                    Log.d("DEBUG", "vvv: populating from internet");
+                    Log.d("DEBUG", "Populating tweets from the service");
                     TweetsListFragment fragment = (TweetsListFragment) mAdapterViewPager.getRegisteredFragment(mViewPager.getCurrentItem());
                     fragment.loadMore();
                 } else {
                     // Network disconnected
-                    Log.d("DEBUG", "vvv: populating from local DB");
+                    Log.d("DEBUG", "Populating tweets from the local DB");
                     TweetsListFragment fragment = (TweetsListFragment) mAdapterViewPager.getRegisteredFragment(mViewPager.getCurrentItem());
                     fragment.populateTimeLineFromLocalDB();
                 }
@@ -94,7 +102,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         registerReceiver(networkChangeReceiver, intentFilter);
     }
 
-    // Click handler for FAB
+    /**
+     * Click handler for FAB
+     */
     public void onComposeNewTweet(View view) {
         // Compose new tweet in a new activity
         FragmentManager fm = getSupportFragmentManager();
@@ -102,20 +112,23 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         composeTweetDialogFragment.show(fm, "fragment_compose_tweet");
     }
 
-    // On click handler for log out menu item
+    /**
+     * On click handler for log out menu item
+     */
     public void onLogOut(MenuItem item) {
-       // client.clearAccessToken();
+        // client.clearAccessToken();
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
     }
 
-    // On click handler for profile menu item
+    /**
+     * On click handler for profile menu item
+     */
     public void onProfileView(MenuItem item) {
         Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
         startActivity(intent);
     }
 
-    // Implementation for interface TweetsListFragment.TweetSelectedListener's onTweetSelected() method
     @Override
     public void onTweetSelected(Tweet tweet) {
         Intent intent = new Intent(this, TweetDetailActivity.class);
@@ -123,15 +136,13 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetD
         startActivity(intent);
     }
 
-    // Implementation for interface ComposeTweetDialogFragment.ComposeTweetDialogListener's onFinishComposeTweet() method
     @Override
     public void onFinishComposeTweet(String tweetText) {
-       // Get the fragment from the smartFragmentStatePagerAdapter
+        // Get the fragment from the smartFragmentStatePagerAdapter
         HomeTimeLineFragment fragment = (HomeTimeLineFragment) mAdapterViewPager.getRegisteredFragment(0);
         // Call the method in the HomeTimeline fragment to insert to the timeline locally
         fragment.insertTweetOnTimeLine(fragment.getUser(), tweetText);
     }
-
 
     @Override
     protected void onDestroy() {

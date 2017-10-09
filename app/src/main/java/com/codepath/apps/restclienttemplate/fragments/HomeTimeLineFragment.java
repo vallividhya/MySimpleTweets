@@ -5,8 +5,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.codepath.apps.restclienttemplate.models.AccountOwner;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.apps.restclienttemplate.models.User;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -20,13 +20,14 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by vidhya on 10/3/17.
+ * Fragment for the home timeline
+ *
+ * @author Valli Vidhya Venkatesan
  */
-
 public class HomeTimeLineFragment extends TweetsListFragment {
-    private TwitterClient mClient;
-    final AccountOwner[] mAccountOwner = new AccountOwner[1];
     private static long sMaxId = 1;
+    final User[] mAccountOwner = new User[1];
+    private TwitterClient mClient;
 
     public static HomeTimeLineFragment newInstance() {
 
@@ -46,9 +47,6 @@ public class HomeTimeLineFragment extends TweetsListFragment {
     }
 
     private void populateTimeLineFromAPICall(final long sinceId) {
-//        if (snackbar != null && snackbar.isShown()) {
-//            snackbar.dismiss();
-//        }
         final Handler handler = new Handler();
 
         Runnable runnable = new Runnable() {
@@ -57,24 +55,22 @@ public class HomeTimeLineFragment extends TweetsListFragment {
                 mClient.getHomeTimeLine(sinceId, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                        //addItems(response);
+                        Log.d("DEBUG", "Home timeline response: " + response.toString());
                         ArrayList<Tweet> list = getTweetsFromJSONResponse(response);
                         addItems(list);
-                        //rotateloading.stop();
-                        Log.d("DEBUG", "vvv:home timeline response - " + response.toString());
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                        Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
-                        Log.d("ERROR", errorResponse.toString());
+                        Log.e("ERROR", errorResponse.toString(), throwable);
+                        Toast.makeText(getContext(), "Something went wrong. Check back later.", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Log.e("ERROR", errorResponse.toString(), throwable);
                         // Error could be 423. In such a case, display from local DB.
                         populateTimeLineFromLocalDB();
-                        Log.d("ERROR", errorResponse.toString());
                     }
                 });
             }
@@ -85,7 +81,6 @@ public class HomeTimeLineFragment extends TweetsListFragment {
     }
 
     private void getAccountOwnerInfo() {
-        //getAccountOwnerInfo
 
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -97,32 +92,29 @@ public class HomeTimeLineFragment extends TweetsListFragment {
                         Log.d("DEBUG", "Account owner : " + response.toString());
 
                         try {
-                            mAccountOwner[0] = AccountOwner.fromJSON(response);
+                            mAccountOwner[0] = User.fromJson(response);
                         } catch (JSONException e) {
-                            Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
-                            Log.e("DEBUG",  "JSON Exception");
+                            Log.e("ERROR", "JSON Exception", e);
+                            Toast.makeText(getContext(), "Something went wrong. Check back later.", Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        // Log.d("DEBUG", errorResponse.getString("error"));
+                        Log.e("ERROR", errorResponse.toString(), throwable);
+                        Toast.makeText(getContext(), "Something went wrong. Check back later.", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                        try {
-                            Log.e("DEBUG",  "v1:"+ errorResponse.getJSONObject(0).toString());
-                            Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
-                        } catch (JSONException e) {
-                            Log.e("DEBUG",  "JSON Exception");
-                        }
+                        Log.e("ERROR", errorResponse.toString(), throwable);
+                        Toast.makeText(getContext(), "Something went wrong. Check back later.", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Log.d("DEBUG", "v2:" + responseString);
-                        Toast.makeText(getContext(), "Something went wrong. Check back later", Toast.LENGTH_LONG).show();
+                        Log.e("ERROR", responseString, throwable);
+                        Toast.makeText(getContext(), "Something went wrong. Check back later.", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -130,7 +122,7 @@ public class HomeTimeLineFragment extends TweetsListFragment {
         handler.post(runnable);
     }
 
-    public AccountOwner getUser() {
+    public User getUser() {
         return mAccountOwner[0];
     }
 
@@ -143,12 +135,11 @@ public class HomeTimeLineFragment extends TweetsListFragment {
         ArrayList<Tweet> list = new ArrayList<>(response.length());
         for (int i = 0; i < response.length(); i++) {
             try {
-                Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
-                Log.d("DEBUG", " since id = " + tweet.getTweetId());
+                Tweet tweet = Tweet.fromJson(response.getJSONObject(i));
+                Log.d("DEBUG", "tweetId= " + tweet.getTweetId() + "Retweeted " + tweet.isReTweeted());
                 list.add(tweet);
-
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("ERROR", "Failed to parse timeline tweets", e);
             }
         }
         if (!list.isEmpty()) {

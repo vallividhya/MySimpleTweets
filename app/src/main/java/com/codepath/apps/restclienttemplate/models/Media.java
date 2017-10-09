@@ -15,26 +15,58 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 /**
- * Created by vidhya on 9/30/17.
+ * Model to represent a media inside tweets.
+ *
+ * @author Valli Vidhya Venkatesan
  */
 @Table(database = SimpleTweetsDatabase.class)
 @Parcel
 public class Media extends BaseModel {
 
     @Column
-    private String mediaUrl;
+    String mediaUrl;
 
     @PrimaryKey
     @Column
-    private long mediaId;
+    long mediaId;
 
     @Column
-    private String mediaType;
+    String mediaType;
 
-    @Column @Nullable
-    private String videoUrl;
+    @Column
+    @Nullable
+    String videoUrl;
 
     public Media() {
+    }
+
+    public Media(JSONObject jsonObject) throws JSONException {
+        super();
+
+        this.mediaUrl = jsonObject.getString("media_url");
+        this.mediaId = jsonObject.getLong("id");
+        this.mediaType = jsonObject.getString("type");
+        if (this.mediaType.equals("video")) {
+
+            JSONArray jArray = jsonObject.getJSONObject("video_info").getJSONArray("variants");
+            if (jArray != null) {
+                for (int i = 0; i < jArray.length(); i++) {
+                    Log.d("DEBUG", "vvv: Here ..." + jArray.getJSONObject(i).toString());
+                }
+                this.videoUrl = jArray.getJSONObject(0).getString("url");
+
+            }
+        }
+        Log.d("DEBUG", "Media URL : " + this.mediaUrl + " , media type = " + this.mediaType + " , Video URL = " + this.videoUrl);
+    }
+
+    public static Media fromJson(JSONObject jsonObject) throws JSONException {
+        if (jsonObject != null) {
+            Media media = new Media(jsonObject);
+            media.save();
+            return media;
+        }
+        return null;
     }
 
     public String getMediaUrl() {
@@ -68,36 +100,5 @@ public class Media extends BaseModel {
 
     public void setVideoUrl(@Nullable String videoUrl) {
         this.videoUrl = videoUrl;
-    }
-
-    public Media (JSONObject jsonObject) {
-        super();
-        try {
-            this.mediaUrl = jsonObject.getString("media_url");
-            this.mediaId = jsonObject.getLong("id");
-            this.mediaType = jsonObject.getString("type");
-            if (this.mediaType.equals("video")) {
-
-                JSONArray jArray = jsonObject.getJSONObject("video_info").getJSONArray("variants");
-                if (jArray != null) {
-                    for (int i = 0; i < jArray.length(); i++) {
-                        Log.d("DEBUG", "vvv: Here ..." + jArray.getJSONObject(i).toString());
-                    }
-                    this.videoUrl = jArray.getJSONObject(0).getString("url");
-
-                }
-            }
-            Log.d("DEBUG", "Media URL : " + this.mediaUrl + " , media type = "+ this.mediaType + " , Video URL = " + this.videoUrl);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    public static Media fromJson(JSONObject jsonObject) throws JSONException{
-        if (jsonObject != null) {
-            Media media = new Media(jsonObject);
-            media.save();
-            return media;
-        }
-        return null;
     }
 }

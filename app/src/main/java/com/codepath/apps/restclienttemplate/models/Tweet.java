@@ -16,70 +16,76 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 /**
- * Created by vidhya on 9/25/17.
+ * Model to represent a tweet.
+ *
+ * @author Valli Vidhya Venkatesan
  */
-
-
 @Table(database = SimpleTweetsDatabase.class)
-@Parcel //(analyze = {Tweet.class})
-public class Tweet extends BaseModel{
+@Parcel
+public class Tweet extends BaseModel {
 
-    @PrimaryKey @Column
-    private long tweetId;
+    public static final int TWEET_LENGTH = 140;
+
+    @PrimaryKey
+    @Column
+    long tweetId;
 
     @Column
-    private String body;
+    String body;
 
     @Column
-    private String createdAt;
+    String createdAt;
 
-    @Column @ForeignKey(saveForeignKeyModel = true)
-    private User user;
+    @Column
+    boolean reTweeted;
 
-    @Column @Nullable @ForeignKey(saveForeignKeyModel = true)
-    private Media media;
+    @Column
+    @ForeignKey(saveForeignKeyModel = true)
+    User user;
+
+    @Column
+    @Nullable
+    @ForeignKey(saveForeignKeyModel = true)
+    Media media;
 
     // empty constructor needed by the Parceler library
     public Tweet() {
     }
 
-    public Tweet(JSONObject jsonObject) {
+    public Tweet(JSONObject jsonObject) throws JSONException {
         super();
-        try {
-            this.body = jsonObject.getString("text");
-            this.createdAt = jsonObject.getString("created_at");
-            this.tweetId = jsonObject.getLong("id");
-            this.user = new User(jsonObject.getJSONObject("user"));
-            JSONObject entityJson = jsonObject.optJSONObject("entities");
-            JSONObject mediaJson = null;
-            if (entityJson != null) {
-                JSONArray mediaJArray = entityJson.optJSONArray("media");
-                // This JSON array has only one element, says Twitter API Docs
-                if (mediaJArray != null) {
-                    mediaJson = mediaJArray.getJSONObject(0);
-                    if (mediaJson != null) {
-                        this.media = new Media(mediaJson);
-                    }
+
+        this.body = jsonObject.getString("text");
+        this.createdAt = jsonObject.getString("created_at");
+        this.tweetId = jsonObject.getLong("id");
+        this.user = new User(jsonObject.getJSONObject("user"));
+        this.reTweeted = jsonObject.getBoolean("retweeted");
+        JSONObject entityJson = jsonObject.optJSONObject("entities");
+        JSONObject mediaJson = null;
+        if (entityJson != null) {
+            JSONArray mediaJArray = entityJson.optJSONArray("media");
+            // This JSON array has only one element, says Twitter API Docs
+            if (mediaJArray != null) {
+                mediaJson = mediaJArray.getJSONObject(0);
+                if (mediaJson != null) {
+                    this.media = new Media(mediaJson);
                 }
             }
-            JSONObject entityExtendedJson = jsonObject.optJSONObject("extended_entities");
-            JSONObject mediaVideoJson = null;
-            if (entityExtendedJson != null) {
-                JSONArray mediaJArray = entityExtendedJson.optJSONArray("media");
-                // This JSON array has only one element, says Twitter API Docs
-                if (mediaJArray != null) {
-                    mediaVideoJson = mediaJArray.getJSONObject(0);
-                    if (mediaVideoJson != null) {
-                        if(mediaVideoJson.getString("type").equals("video")) {
-                            this.media = new Media(mediaVideoJson);
-                        }
-
+        }
+        JSONObject entityExtendedJson = jsonObject.optJSONObject("extended_entities");
+        JSONObject mediaVideoJson = null;
+        if (entityExtendedJson != null) {
+            JSONArray mediaJArray = entityExtendedJson.optJSONArray("media");
+            // This JSON array has only one element, says Twitter API Docs
+            if (mediaJArray != null) {
+                mediaVideoJson = mediaJArray.getJSONObject(0);
+                if (mediaVideoJson != null) {
+                    if (mediaVideoJson.getString("type").equals("video")) {
+                        this.media = new Media(mediaVideoJson);
                     }
+
                 }
             }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
@@ -97,7 +103,7 @@ public class Tweet extends BaseModel{
 
     }
 
-    public static Tweet fromJSON (JSONObject jsonObject) throws JSONException {
+    public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet(jsonObject);
         tweet.getUser().save();
         if (tweet.getMedia() != null) {
@@ -148,4 +154,11 @@ public class Tweet extends BaseModel{
         this.media = media;
     }
 
+    public boolean isReTweeted() {
+        return reTweeted;
+    }
+
+    public void setReTweeted(boolean reTweeted) {
+        this.reTweeted = reTweeted;
+    }
 }

@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,11 +31,17 @@ import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ProfileActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener, TweetsListFragment.ProfileSelectedListener {
+/**
+ * Activity for showing profile of the user
+ *
+ * @author Valli Vidhya Venkatesan
+ */
+public class ProfileActivity extends AppCompatActivity
+        implements TweetsListFragment.TweetSelectedListener, TweetsListFragment.ProfileSelectedListener {
 
+    Toolbar toolbar;
     private TwitterClient mClient;
     private ActivityProfileBinding mBinding;
-    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +94,7 @@ public class ProfileActivity extends AppCompatActivity implements TweetsListFrag
 
             populateUserHeadline(user);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("ERROR", "Failed to parse User response from server", e);
         }
     }
 
@@ -113,7 +120,7 @@ public class ProfileActivity extends AppCompatActivity implements TweetsListFrag
         str1.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, follow1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         str1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, follow1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         str1.append(" Following");
-        tvFollowing.setText(str1,  TextView.BufferType.SPANNABLE);
+        tvFollowing.setText(str1, TextView.BufferType.SPANNABLE);
         tvTagline.setText(user.getTagLine());
     }
 

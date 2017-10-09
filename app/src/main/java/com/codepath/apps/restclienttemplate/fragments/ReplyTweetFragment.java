@@ -30,7 +30,13 @@ import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ *  Dialog Fragment for replying to a tweet
+ *
+ * @author Valli Vidhya Venkatesan
+ */
 public class ReplyTweetFragment extends DialogFragment {
+
     private EditText etComposeTweet;
     private Button btnTweet;
     private ImageButton btnCloseDialog;
@@ -42,10 +48,6 @@ public class ReplyTweetFragment extends DialogFragment {
 
     public ReplyTweetFragment() {
         // Required empty public constructor
-    }
-
-    public interface ReplyTweetDialogListener {
-        void onFinishComposeTweet();
     }
 
     public static ReplyTweetFragment newInstance(String title) {
@@ -78,7 +80,6 @@ public class ReplyTweetFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         return inflater.inflate(R.layout.fragment_reply_tweet, container);
     }
 
@@ -92,7 +93,6 @@ public class ReplyTweetFragment extends DialogFragment {
         String title = getArguments().getString("title", "Let's mTweet");
         getDialog().setTitle(title);
 
-        //getDraft();
         etComposeTweet.append("@" + mTweet.getUser().getScreenName() + " ");
         // Show soft keyboard automatically and request focus to field
         etComposeTweet.requestFocus();
@@ -105,8 +105,6 @@ public class ReplyTweetFragment extends DialogFragment {
             public void onClick(View v) {
                 String text = etComposeTweet.getText().toString();
                 postReplyToTweet(text, mTweet.getTweetId());
-                // Delete draft if exists
-                //saveDraft("");
                 dismiss();
             }
         });
@@ -115,7 +113,6 @@ public class ReplyTweetFragment extends DialogFragment {
         btnCloseDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //saveDraft(etComposeTweet.getText().toString());
                 dismiss();
             }
         });
@@ -127,10 +124,11 @@ public class ReplyTweetFragment extends DialogFragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 tvCharCount.setText(s.length() + getActivity().getResources().getString(R.string.charCountString));
-                if(s.length() > 140) {
+                if (s.length() > Tweet.TWEET_LENGTH) {
                     // Disable TweetInDB button
                     btnTweet.setEnabled(false);
                 } else {
@@ -154,22 +152,23 @@ public class ReplyTweetFragment extends DialogFragment {
                 mClient.postTweet(tweetText, inReplyStatusId, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.d("DEBUG", "vvv: Reply post Successful");
-                        //ReplyTweetDialogListener listener = (ReplyTweetDialogListener) getActivity();
+                        Log.d("DEBUG", "Reply post successful");
                         listener.onFinishComposeTweet();
-                        // Delete draft if exists
-                        //saveDraft("");
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.d("DEBUG", "post failed " + errorResponse.toString());
-                        Toast.makeText(getContext(), "Failed to post", Toast.LENGTH_LONG).show();
+                        Log.e("ERROR", "Post reply failed " + errorResponse.toString());
+                        Toast.makeText(getContext(), "Failed to post.", Toast.LENGTH_LONG).show();
                     }
                 });
             }
         };
         // This API does not have a rate-limit. So, can just be posted.
         handler.post(runnable);
+    }
+
+    public interface ReplyTweetDialogListener {
+        void onFinishComposeTweet();
     }
 }

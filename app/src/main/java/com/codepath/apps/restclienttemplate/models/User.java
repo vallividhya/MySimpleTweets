@@ -11,35 +11,58 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 /**
- * Created by vidhya on 9/25/17.
+ * Model to represent a user.
+ *
+ * @author Valli Vidhya Venkatesan
  */
-
 @Table(database = SimpleTweetsDatabase.class)
 @Parcel
 public class User extends BaseModel {
 
     @PrimaryKey
     @Column
-    private long userId;
+    long userId;
 
     @Column
-    private String name;
+    String name;
 
     @Column
-    private String screenName;
+    String screenName;
 
     @Column
-    private String profileImageUrl;
+    String profileImageUrl;
 
     @Column
-    private long followers;
+    long followers;
 
     @Column
-    private long following;
+    long following;
 
     @Column
-    private String tagLine;
+    String tagLine;
 
+
+    public User(JSONObject jsonObject) throws JSONException {
+        super();
+
+        this.name = jsonObject.getString("name");
+        this.userId = jsonObject.getLong("id");
+        this.screenName = jsonObject.getString("screen_name");
+        this.profileImageUrl = jsonObject.getString("profile_image_url");
+        this.tagLine = jsonObject.getString("description");
+        this.followers = jsonObject.getInt("followers_count");
+        this.following = jsonObject.getInt("friends_count");
+    }
+
+    // Empty constructor for Parceler library
+    public User() {
+    }
+
+    public static User fromJson(JSONObject jsonObject) throws JSONException {
+        User user = new User(jsonObject);
+        user.save();
+        return user;
+    }
 
     public long getUserId() {
         return userId;
@@ -95,31 +118,6 @@ public class User extends BaseModel {
 
     public void setTagLine(String tagLine) {
         this.tagLine = tagLine;
-    }
-
-    public User(JSONObject jsonObject) {
-        super();
-        try {
-            this.name = jsonObject.getString("name");
-            this.userId = jsonObject.getLong("id");
-            this.screenName = jsonObject.getString("screen_name");
-            this.profileImageUrl = jsonObject.getString("profile_image_url");
-            this.tagLine = jsonObject.getString("description");
-            this.followers = jsonObject.getInt("followers_count");
-            this.following = jsonObject.getInt("friends_count");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    // Empty constructor for Parceler library
-    public User() {}
-
-    public static User fromJson(JSONObject jsonObject) throws JSONException{
-        User user = new User(jsonObject);
-        user.save();
-        return user;
     }
 
 }

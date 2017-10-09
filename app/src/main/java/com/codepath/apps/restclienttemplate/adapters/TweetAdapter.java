@@ -26,26 +26,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by vidhya on 9/25/17.
+ * Adapter using View Holder pattern for {@link RecyclerView} items.
+ *
+ * @author Valli Vidhya Venkatesan
  */
-
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> {
 
     private ArrayList<Tweet> mTweetsList;
     private Context context;
     private TweetAdapterOnItemClickListener onItemClickListener;
-
-    public interface TweetAdapterOnItemClickListener {
-        void onItemClick(View itemView, int position);
-
-        void onProfileImageClick(String screenName);
-
-        void onReplyClick(View itemView, int position);
-    }
-
-    public interface OnTweetReplyClickListener {
-        void onTweetReplyClick (View itemView, int position);
-    }
 
     public TweetAdapter(ArrayList<Tweet> tweetsList, TweetAdapterOnItemClickListener listener) {
         mTweetsList = tweetsList;
@@ -100,7 +89,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                     }
                 });
             } catch (Exception e) {
-                Log.e("ERROR", e.getMessage());
+                Log.e("ERROR", "Failed to load the video: " + tweet.getMedia().getVideoUrl(), e);
             }
         } else {
             holder.vvMediaVideo.setVisibility(View.GONE);
@@ -123,6 +112,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    public interface TweetAdapterOnItemClickListener {
+        void onItemClick(View itemView, int position);
+
+        void onProfileImageClick(String screenName);
+
+        void onReplyClick(View itemView, int position);
+    }
+
+    public interface OnTweetReplyClickListener {
+        void onTweetReplyClick(View itemView, int position);
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 

@@ -18,12 +18,13 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by vidhya on 10/4/17.
+ * Fragment for the user's timeline
+ *
+ * @author Valli Vidhya Venkatesan
  */
-
 public class UserTimelineFragment extends TweetsListFragment {
-    private TwitterClient mClient;
     private static long sMaxId = 1;
+    private TwitterClient mClient;
 
     public static UserTimelineFragment newInstance(String screenName) {
         UserTimelineFragment userTimelineFragment = new UserTimelineFragment();
@@ -52,27 +53,28 @@ public class UserTimelineFragment extends TweetsListFragment {
                 mClient.getUserTimeLine(since_id, screenName, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                        Log.d("DEBUG", response.toString());
                         ArrayList<Tweet> list = getTweetsFromJSONResponse(response);
                         addItems(list);
-                        Log.d("DEBUG", response.toString());
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                        Log.e("ERROR", errorResponse.toString());
+                        Log.e("ERROR", errorResponse.toString(), throwable);
+                        // Error could be 423. In such a case, display from local DB.
+                        populateTimeLineFromLocalDB();
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Log.e("ERROR", errorResponse.toString(), throwable);
                         // Error could be 423. In such a case, display from local DB.
                         populateTimeLineFromLocalDB();
-                        Log.e("ERROR", errorResponse.toString());
                     }
                 });
             }
         };
 
-         //rotateloading.start();
         // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
         handler.postDelayed(runnable, 500);
     }
@@ -86,12 +88,12 @@ public class UserTimelineFragment extends TweetsListFragment {
         ArrayList<Tweet> list = new ArrayList<>(response.length());
         for (int i = 0; i < response.length(); i++) {
             try {
-                Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
+                Tweet tweet = Tweet.fromJson(response.getJSONObject(i));
                 Log.d("DEBUG", " since id = " + tweet.getTweetId());
                 list.add(tweet);
 
             } catch (JSONException e) {
-                Log.e("ERROR", "JSON Exception: " + e.getMessage());
+                Log.e("ERROR", "Error while parsing the user tweets response.", e);
             }
         }
         if (!list.isEmpty()) {

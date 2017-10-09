@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.R;
+import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -28,28 +29,22 @@ import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * Dialog Fragment for composing new tweet
+ *
+ * @author Valli Vidhya Venkatesan
+ */
+public class ComposeTweetDialogFragment extends DialogFragment {
 
-public class ComposeTweetDialogFragment extends DialogFragment   {
-
+    private TwitterClient client;
     private EditText etComposeTweet;
     private Button btnTweet;
     private ImageButton btnCloseDialog;
     private TextView tvCharCount;
     private SharedPreferences preferences;
-    TwitterClient client;
 
     public ComposeTweetDialogFragment() {
         // Required empty public constructor
-    }
-
-    public interface ComposeTweetDialogListener  {
-        void onFinishComposeTweet(String tweetText);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        client = TwitterApp.getRestClient();
     }
 
     public static ComposeTweetDialogFragment newInstance(String title) {
@@ -58,6 +53,12 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
         args.putString("title", title);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        client = TwitterApp.getRestClient();
     }
 
     @Override
@@ -114,10 +115,11 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 tvCharCount.setText(s.length() + getActivity().getResources().getString(R.string.charCountString));
-                if(s.length() > 140) {
+                if (s.length() > Tweet.TWEET_LENGTH) {
                     // Disable TweetInDB button
                     btnTweet.setEnabled(false);
                 } else {
@@ -136,19 +138,17 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
     private void postNewTweet(final String tweetText) {
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
-
             @Override
             public void run() {
                 client.postTweet(tweetText, 0, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.d("DEBUG", "post Successful");
-
+                        Log.d("DEBUG", "Post Successful");
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.d("DEBUG", "post failed " + errorResponse.toString());
+                        Log.e("ERROR", "Post failed " + errorResponse.toString(), throwable);
                         Toast.makeText(getContext(), "Failed to post", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -157,7 +157,6 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
         // This API does not have a rate-limit. So, can just be posted.
         handler.post(runnable);
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -175,5 +174,9 @@ public class ComposeTweetDialogFragment extends DialogFragment   {
         SharedPreferences pref = getActivity().getSharedPreferences("Drafts", Context.MODE_PRIVATE);
         String draft = pref.getString("draft", "");
         etComposeTweet.setText(draft);
+    }
+
+    public interface ComposeTweetDialogListener {
+        void onFinishComposeTweet(String tweetText);
     }
 }

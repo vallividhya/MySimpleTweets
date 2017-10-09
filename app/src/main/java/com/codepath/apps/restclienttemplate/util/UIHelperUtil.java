@@ -7,9 +7,10 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.MenuItem;
 
 /**
- * Created by vidhya on 9/25/17.
+ * Utility class for UI
+ *
+ * @author Valli Vidhya Venkatesan
  */
-
 public class UIHelperUtil {
 
     public static void tintMenuIcon(Context context, MenuItem item, @ColorRes int color) {
@@ -19,5 +20,4 @@ public class UIHelperUtil {
 
         item.setIcon(wrapDrawable);
     }
-
 }

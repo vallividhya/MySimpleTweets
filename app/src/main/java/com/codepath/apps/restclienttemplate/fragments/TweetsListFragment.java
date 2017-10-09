@@ -15,7 +15,6 @@ import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.adapters.TweetAdapter;
 import com.codepath.apps.restclienttemplate.databinding.FragmentTweetsListBinding;
 import com.codepath.apps.restclienttemplate.listeners.EndlessRecyclerViewScrollListener;
-import com.codepath.apps.restclienttemplate.models.AccountOwner;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
 import com.codepath.apps.restclienttemplate.util.NetworkUtil;
@@ -24,9 +23,14 @@ import com.raizlabs.android.dbflow.sql.language.SQLite;
 
 import java.util.ArrayList;
 
-
+/**
+ * Base fragment class for displaying tweets in a recycler view
+ *
+ * @author Valli Vidhya Venkatesan
+ */
 public abstract class TweetsListFragment extends Fragment implements TweetAdapter.TweetAdapterOnItemClickListener {
 
+    protected com.victor.loading.rotate.RotateLoading rotateloading;
     private TweetAdapter adapter;
     private ArrayList<Tweet> mTweetsList;
     private RecyclerView rvTweets;
@@ -35,21 +39,6 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     private SwipeRefreshLayout swipeContainer;
     private Snackbar snackbar;
     private LinearLayoutManager layoutManager;
-    protected com.victor.loading.rotate.RotateLoading rotateloading;
-
-    public interface TweetSelectedListener {
-        // Handle Tweet selection
-        public void onTweetSelected(Tweet tweet);
-    }
-
-    public interface ProfileSelectedListener {
-        public void onProfileSelected(String screenName);
-    }
-
-    public interface ReplyClickedListener {
-        public void onReplyTweetClicked(Tweet tweet);
-    }
-
 
     public TweetsListFragment() {
         // Required empty public constructor
@@ -122,23 +111,23 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
         adapter.notifyItemInserted(mTweetsList.size() - 1);
     }
 
-    public void insertTweetOnTimeLine(AccountOwner accountOwner, String tweetText) {
-        //Insert this mTweet in the timeline to appear first
+    public void insertTweetOnTimeLine(User accountOwner, String tweetText) {
+        // Insert this mTweet in the timeline to appear first
         Tweet tweet = new Tweet();
         tweet.setCreatedAt(TimeUtil.getTwitterFormatForCurrentTime());
         tweet.setBody(tweetText);
-        //Get User details
+        // Get User details
         User user = new User();
         user.setName(accountOwner.getName());
         user.setScreenName(accountOwner.getScreenName());
         user.setProfileImageUrl(accountOwner.getProfileImageUrl());
         tweet.setUser(user);
         // Insert mTweet even before a refresh
-        //Insert mTweet at adapter position 0
-         mTweetsList.add(0, tweet);
-         adapter.notifyItemInserted(0);
-        //To show the latest mTweet added by account owner on the top
-         rvTweets.smoothScrollToPosition(0);
+        // Insert mTweet at adapter position 0
+        mTweetsList.add(0, tweet);
+        adapter.notifyItemInserted(0);
+        // To show the latest mTweet added by account owner on the top
+        rvTweets.smoothScrollToPosition(0);
     }
 
     public void addItemsFromDatabase() {
@@ -149,7 +138,7 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     public void populateTimeLineFromLocalDB() {
         // No Network connection
         // Read from DB
-       addItemsFromDatabase();
+        addItemsFromDatabase();
     }
 
     @Override
@@ -171,4 +160,17 @@ public abstract class TweetsListFragment extends Fragment implements TweetAdapte
     }
 
     public abstract void loadMore();
+
+    public interface TweetSelectedListener {
+        // Handle Tweet selection
+        public void onTweetSelected(Tweet tweet);
+    }
+
+    public interface ProfileSelectedListener {
+        public void onProfileSelected(String screenName);
+    }
+
+    public interface ReplyClickedListener {
+        public void onReplyTweetClicked(Tweet tweet);
+    }
 }

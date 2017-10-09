@@ -70,6 +70,8 @@
         android:layout_below="@id/vvMediaVideo"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:tint="@color/colorPrimary"
+        android:background="@color/colorBackground"
         android:src="@drawable/ic_reply_black_12dp"/>
 
 </RelativeLayout>

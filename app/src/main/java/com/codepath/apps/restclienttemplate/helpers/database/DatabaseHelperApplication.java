@@ -6,9 +6,10 @@ import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 /**
- * Created by vidhya on 9/28/17.
+ * Database initialization class
+ *
+ * @author Valli Vidhya Venkatesan
  */
-
 public class DatabaseHelperApplication extends Application {
 
     @Override

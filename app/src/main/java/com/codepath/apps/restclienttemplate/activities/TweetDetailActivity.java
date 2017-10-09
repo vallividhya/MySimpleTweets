@@ -3,11 +3,13 @@ package com.codepath.apps.restclienttemplate.activities;
 import android.databinding.DataBindingUtil;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -22,10 +24,20 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
 import com.codepath.apps.restclienttemplate.util.TimeUtil;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
-public class TweetDetailActivity extends AppCompatActivity implements ReplyTweetFragment.ReplyTweetDialogListener {
+import cz.msebera.android.httpclient.Header;
+
+/**
+ * Activity for showing detailed tweet
+ *
+ * @author Valli Vidhya Venkatesan
+ */
+public class TweetDetailActivity extends AppCompatActivity
+        implements ReplyTweetFragment.ReplyTweetDialogListener {
 
     private ImageView ivProfileImage;
     private TextView tvUserName;
@@ -33,7 +45,8 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
     private TextView tvTime;
     private ImageView ivTweetMediaImage;
     private VideoView vvMediaVideo;
-    private Button btnReply;
+    private ImageView ivReply;
+    private ImageView ivReTweet;
     private Tweet mTweet;
     private TwitterClient mClient;
     private ActivityTweetDetailBinding mBinding;
@@ -65,12 +78,12 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
         tvTime.setText(TimeUtil.getRelativeTimeAgo(mTweet.getCreatedAt()));
         Glide.with(getApplicationContext()).load(mTweet.getUser().getProfileImageUrl()).into(ivProfileImage);
 
-        ivTweetMediaImage = mBinding.ivMediaImage; //(ImageView) findViewById(R.id.ivMediaImage);
+        ivTweetMediaImage = mBinding.ivMediaImage;
         if (mTweet.getMedia() != null) {
             Glide.with(getApplicationContext()).load(mTweet.getMedia().getMediaUrl()).into(ivTweetMediaImage);
         }
 
-        vvMediaVideo = mBinding.vvDetailVideo; // (VideoView) findViewById(R.id.vvDetailVideo);
+        vvMediaVideo = mBinding.vvDetailVideo;
         MediaController mediaController = new MediaController(this);
         vvMediaVideo.setMediaController(mediaController);
 
@@ -90,10 +103,35 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
             vvMediaVideo.setVisibility(View.GONE);
         }
 
-        btnReply = mBinding.btnReply; //(Button) findViewById(R.id.btnReply);
+        ivReply = mBinding.btnReply;
+        ivReTweet = mBinding.btnReTweet;
+
+        if (mTweet.isReTweeted()) {
+            ivReTweet.setImageDrawable(DrawableCompat.wrap(ivReTweet.getDrawable()));
+            DrawableCompat.setTint(
+                    ivReTweet.getDrawable(),
+                    getResources().getColor(R.color.colorPrimary)
+            );
+            ivReTweet.invalidate();
+        }
+
+//        ColorStateList colors;
+//        if (Build.VERSION.SDK_INT >= 23) {
+//            colors = getResources().getColorStateList(R.color.colorPrimary, getTheme());
+//        }
+//        else {
+//            colors = getResources().getColorStateList(R.color.colorPrimary);
+//        }
+//        if (mTweet.isReTweeted()) {
+//            Drawable drawable = getResources().getDrawable(R.drawable.ic_retweet_24px);
+//            Drawable icon = DrawableCompat.wrap(drawable);
+//            DrawableCompat.setTint(icon.mutate(), getResources().getColor(R.color.colorPrimary));
+//            //DrawableCompat.setTintList(icon.mutate(), colors);
+//            ivReTweet.setImageDrawable(icon);
+//        }
     }
 
-
+    // Click Handler for Reply button
     public void onReplyTweet(View view) {
         // Bring up the modal to reply
         Bundle bundle = new Bundle();
@@ -108,5 +146,33 @@ public class TweetDetailActivity extends AppCompatActivity implements ReplyTweet
     public void onFinishComposeTweet() {
         Toast.makeText(this, "Tweet posted", Toast.LENGTH_SHORT).show();
         // Ask the TimeLineActivity to insert tweet on top
+    }
+
+    public void onReTweet(View view) {
+        postReTweet(mTweet.getTweetId());
+    }
+
+    // Click handler for Retweet button
+    private void postReTweet(final long reTweetStatusId) {
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+
+            @Override
+            public void run() {
+                mClient.postReTweet(reTweetStatusId, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Log.d("DEBUG", "RetweetSuccessful");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Log.e("ERROR", "post failed " + errorResponse.toString());
+                    }
+                });
+            }
+        };
+        // This API does not have a rate-limit. So, can just be posted.
+        handler.post(runnable);
     }
 }
