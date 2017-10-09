@@ -107,12 +107,7 @@ public class TweetDetailActivity extends AppCompatActivity
         ivReTweet = mBinding.btnReTweet;
 
         if (mTweet.isReTweeted()) {
-            ivReTweet.setImageDrawable(DrawableCompat.wrap(ivReTweet.getDrawable()));
-            DrawableCompat.setTint(
-                    ivReTweet.getDrawable(),
-                    getResources().getColor(R.color.colorPrimary)
-            );
-            ivReTweet.invalidate();
+            paintButton(R.color.colorPrimary);
         }
 
 //        ColorStateList colors;
@@ -154,25 +149,61 @@ public class TweetDetailActivity extends AppCompatActivity
 
     // Click handler for Retweet button
     private void postReTweet(final long reTweetStatusId) {
-        final Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
+        if (!mTweet.isReTweeted()) {
+            paintButton(R.color.colorPrimary);
+            mTweet.setReTweeted(true);
+            final Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
 
-            @Override
-            public void run() {
-                mClient.postReTweet(reTweetStatusId, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.d("DEBUG", "RetweetSuccessful");
-                    }
+                @Override
+                public void run() {
+                    mClient.postReTweet(reTweetStatusId, new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            Log.d("DEBUG", "Retweet Successful");
+                        }
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.e("ERROR", "post failed " + errorResponse.toString());
-                    }
-                });
-            }
-        };
-        // This API does not have a rate-limit. So, can just be posted.
-        handler.post(runnable);
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                            Log.e("ERROR", "post failed " + errorResponse.toString());
+                        }
+                    });
+                }
+            };
+            // This API does not have a rate-limit. So, can just be posted.
+            handler.post(runnable);
+        } else {
+            paintButton(R.color.colorDarkGrey);
+            mTweet.setReTweeted(false);
+            final Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+
+                @Override
+                public void run() {
+                    mClient.postUnReTweet(reTweetStatusId, new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            Log.d("DEBUG", "Unretweet Successful");
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                            Log.e("ERROR", "post failed " + errorResponse.toString());
+                        }
+                    });
+                }
+            };
+            // This API does not have a rate-limit. So, can just be posted.
+            handler.post(runnable);
+        }
+    }
+
+    private void paintButton(int colorId) {
+        ivReTweet.setImageDrawable(DrawableCompat.wrap(ivReTweet.getDrawable()));
+        DrawableCompat.setTint(
+                ivReTweet.getDrawable(),
+                getResources().getColor(colorId)
+        );
+        ivReTweet.invalidate();
     }
 }
