@@ -92,7 +92,7 @@ public class MentionsTimelineFragment extends TweetsListFragment {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.d("ERROR", errorResponse.toString(), throwable);
+                        //Log.d("ERROR", errorResponse.toString(), throwable);
                         Toast.makeText(getContext(), "Something went wrong. Check back later.", Toast.LENGTH_LONG).show();
                     }
 
