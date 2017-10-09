@@ -7,6 +7,7 @@ import android.util.Log;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
+import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -67,16 +68,18 @@ public class UserTimelineFragment extends TweetsListFragment {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.e("ERROR", errorResponse.toString(), throwable);
+                       // Log.e("ERROR", errorResponse.toString(), throwable);
                         // Error could be 423. In such a case, display from local DB.
                         populateTimeLineFromLocalDB();
                     }
                 });
             }
         };
+        if (NetworkUtil.isNetworkAvailable(getContext())) {
+            // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
+            handler.postDelayed(runnable, 500);
+        }
 
-        // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
-        handler.postDelayed(runnable, 500);
     }
 
     @Override

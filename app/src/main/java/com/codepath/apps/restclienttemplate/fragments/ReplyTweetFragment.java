@@ -23,6 +23,7 @@ import com.codepath.apps.restclienttemplate.R;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
+import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
@@ -164,8 +165,11 @@ public class ReplyTweetFragment extends DialogFragment {
                 });
             }
         };
-        // This API does not have a rate-limit. So, can just be posted.
-        handler.post(runnable);
+
+        if (NetworkUtil.isNetworkAvailable(getContext())) {
+            // This API does not have a rate-limit. So, can just be posted.
+            handler.post(runnable);
+        }
     }
 
     public interface ReplyTweetDialogListener {

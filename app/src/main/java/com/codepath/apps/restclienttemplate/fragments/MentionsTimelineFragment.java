@@ -9,6 +9,7 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
+import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -67,8 +68,10 @@ public class MentionsTimelineFragment extends TweetsListFragment {
             }
         };
 
-        // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
-        handler.postDelayed(runnable, 500);
+        if (NetworkUtil.isNetworkAvailable(getContext())) {
+            // This API has rate-limit of 15 requests in a 15 min window. So, staggering the requests
+            handler.postDelayed(runnable, 500);
+        }
     }
 
     private void getAccountOwnerInfo() {
@@ -110,7 +113,9 @@ public class MentionsTimelineFragment extends TweetsListFragment {
                 });
             }
         };
-        handler.post(runnable);
+        if (NetworkUtil.isNetworkAvailable(getContext())) {
+            handler.post(runnable);
+        }
     }
 
     @Override

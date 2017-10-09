@@ -9,6 +9,7 @@ import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
+import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -119,7 +120,10 @@ public class HomeTimeLineFragment extends TweetsListFragment {
                 });
             }
         };
-        handler.post(runnable);
+        if (NetworkUtil.isNetworkAvailable(getContext())) {
+            handler.post(runnable);
+        }
+
     }
 
     public User getUser() {

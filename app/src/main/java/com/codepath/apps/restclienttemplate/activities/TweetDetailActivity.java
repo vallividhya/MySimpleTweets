@@ -23,6 +23,7 @@ import com.codepath.apps.restclienttemplate.fragments.ReplyTweetFragment;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.twitter.TwitterApp;
 import com.codepath.apps.restclienttemplate.twitter.TwitterClient;
+import com.codepath.apps.restclienttemplate.util.NetworkUtil;
 import com.codepath.apps.restclienttemplate.util.TimeUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -171,7 +172,10 @@ public class TweetDetailActivity extends AppCompatActivity
                 }
             };
             // This API does not have a rate-limit. So, can just be posted.
-            handler.post(runnable);
+            if (NetworkUtil.isNetworkAvailable(this)) {
+                handler.post(runnable);
+            }
+
         } else {
             paintButton(R.color.colorDarkGrey);
             mTweet.setReTweeted(false);
@@ -194,7 +198,9 @@ public class TweetDetailActivity extends AppCompatActivity
                 }
             };
             // This API does not have a rate-limit. So, can just be posted.
-            handler.post(runnable);
+            if (NetworkUtil.isNetworkAvailable(this)) {
+                handler.post(runnable);
+            }
         }
     }
 
